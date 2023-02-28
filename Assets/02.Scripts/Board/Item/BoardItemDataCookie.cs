@@ -5,12 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Cookie", menuName = "ScriptableObject/BoardItem/Cookie")]
 public class BoardItemDataCookie : BoardItemData
 {
-    public override void OnDestroyed()
+    public override void OnDestroyed(Board board, BoardItemType destroyer, BoardSlot slot)
     {
         throw new System.NotImplementedException();
     }
 
-    public override void OnSwiped()
+    public override void OnSwiped(Board board)
     {
         throw new System.NotImplementedException();
     }

@@ -61,7 +61,7 @@ public class BoardEditor : MonoBehaviour
         {
             int column = int.Parse(_columnInputField.text);
 
-            for (int i = (int)KeyCode.Alpha1; i <= (int)KeyCode.Alpha4; i++)
+            for (int i = (int)KeyCode.Alpha1; i < (int)KeyCode.Alpha1 + _itemDataCandidates.Length; i++)
             {
                 if (Input.GetKeyDown((KeyCode)i))
                 {

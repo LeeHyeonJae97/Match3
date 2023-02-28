@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f9fdef6b79c3b34fb3e47cbeeb1063b, type: 3}
   m_Name: Ginger
   m_EditorClassIdentifier: 
-  _type: 20
+  _type: 19
   _selectable: 0
   _static: 1
   _destroyable: 0

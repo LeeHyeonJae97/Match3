@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ceec8ae0fd0faa49b27bb811dd16803, type: 3}
   m_Name: CandyYellow
   m_EditorClassIdentifier: 
-  _type: 4
+  _type: 3
   _selectable: 1
   _static: 0
   _destroyable: 1
   _stackable: 1
   _penetratable: 1
   _layer: 0
-  _sprite: {fileID: 20113940, guid: fd03671d669a3b54294b547840058c12, type: 3}
+  _sprite: {fileID: -415397099, guid: fd03671d669a3b54294b547840058c12, type: 3}

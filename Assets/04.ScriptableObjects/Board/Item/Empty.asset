@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d670c8a537504db4a8c702339c06b8c3, type: 3}
   m_Name: Empty
   m_EditorClassIdentifier: 
-  _type: 0
+  _type: 21
   _selectable: 0
   _static: 1
   _destroyable: 0

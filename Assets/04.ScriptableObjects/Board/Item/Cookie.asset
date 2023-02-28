@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb564688cc013584f8a94e98c3105d53, type: 3}
   m_Name: Cookie
   m_EditorClassIdentifier: 
-  _type: 18
+  _type: 17
   _selectable: 0
   _static: 1
   _destroyable: 1

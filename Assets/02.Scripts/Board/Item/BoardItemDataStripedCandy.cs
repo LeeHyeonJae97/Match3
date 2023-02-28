@@ -5,13 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StripedCandy", menuName = "ScriptableObject/BoardItem/StripedCandy")]
 public class BoardItemDataStripedCandy : BoardItemData
 {
-    public override void OnDestroyed()
+    public override void OnDestroyed(Board board, BoardItemType destroyer, BoardSlot slot)
     {
-        throw new System.NotImplementedException();
+        if (!board.Matched.Contains(slot)) board.Matched.Add(slot);
+        board.Clear(Type);
+        board.RemoveRow(slot);
     }
 
-    public override void OnSwiped()
+    public override void OnSwiped(Board board)
     {
-        throw new System.NotImplementedException();
+        board.Swap();
     }
 }

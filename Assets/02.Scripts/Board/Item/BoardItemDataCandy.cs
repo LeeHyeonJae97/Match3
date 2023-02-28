@@ -5,13 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Candy", menuName = "ScriptableObject/BoardItem/Candy")]
 public class BoardItemDataCandy : BoardItemData
 {
-    public override void OnDestroyed()
+    public override void OnDestroyed(Board board, BoardItemType destroyer, BoardSlot slot)
     {
-        throw new System.NotImplementedException();
+        if (!board.Matched.Contains(slot)) board.Matched.Add(slot);
+        board.Clear(Type);
     }
 
-    public override void OnSwiped()
+    public override void OnSwiped(Board board)
     {
-        throw new System.NotImplementedException();
+        board.Swap();
     }
 }

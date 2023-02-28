@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37661c0fe52ace84897497d2d062a1cb, type: 3}
-  m_Name: RainbowCandy
+  m_Script: {fileID: 11500000, guid: bf2b55c4063ed32448a9bcb8abc1b01c, type: 3}
+  m_Name: StripedCandyRed
   m_EditorClassIdentifier: 
-  _type: 5
+  _type: 6
   _selectable: 1
   _static: 0
   _destroyable: 1
   _stackable: 1
   _penetratable: 1
   _layer: 0
-  _sprite: {fileID: 0}
+  _sprite: {fileID: 1217893737, guid: fd03671d669a3b54294b547840058c12, type: 3}

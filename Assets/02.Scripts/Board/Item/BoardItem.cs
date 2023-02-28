@@ -56,4 +56,14 @@ public class BoardItem : MonoBehaviour
             }
         }
     }
+
+    public void OnSwiped(Board board)
+    {
+        _data.OnSwiped(board);
+    }
+
+    public void OnDestroyed(Board board, BoardItemType destroyer, BoardSlot slot)
+    {
+        _data.OnDestroyed(board, destroyer, slot);
+    }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 178d8a13b7f5dac4e99fef53e963feb6, type: 3}
   m_Name: GingerSoul
   m_EditorClassIdentifier: 
-  _type: 21
+  _type: 20
   _selectable: 0
   _static: 1
   _destroyable: 1

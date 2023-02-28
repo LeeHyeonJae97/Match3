@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3f0ec554639f1c42b243ad84a1c0340, type: 3}
   m_Name: WrappedCandyBlue
   m_EditorClassIdentifier: 
-  _type: 10
+  _type: 8
   _selectable: 1
   _static: 0
   _destroyable: 1
   _stackable: 1
   _penetratable: 1
   _layer: 0
-  _sprite: {fileID: 1227181725, guid: fd03671d669a3b54294b547840058c12, type: 3}
+  _sprite: {fileID: 863445477, guid: fd03671d669a3b54294b547840058c12, type: 3}
