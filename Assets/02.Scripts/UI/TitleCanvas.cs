@@ -16,6 +16,6 @@ public class TitleCanvas : MonoBehaviour
 
     private void OnClickStartButton()
     {
-        SceneManager.LoadScene("Stage");
+        SceneManager.LoadScene("Lobby");
     }
 }

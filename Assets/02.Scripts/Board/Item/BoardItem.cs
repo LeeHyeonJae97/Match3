@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// item in slot
+/// </summary>
 public class BoardItem : MonoBehaviour
 {
-    public Vector2 Position
+    
+    public Vector2 Position                            // item's current position
     {
         get { return transform.position; }
 
         set { transform.position = value; }
     }
     public Vector2 TargetPosition { get; set; }
-    public BoardItemData Data
+   
+    public BoardItemData Data                          // item's data (candy, striped candy, ball, ...)
     {
         get { return _data; }
 
@@ -32,9 +37,11 @@ public class BoardItem : MonoBehaviour
             }
         }
     }
-    public bool Move { get; set; }
-    public Bounds Bounds { get { return _sr.bounds; } }
+    
+    public bool Move { get; set; }                      // is item moving toward new slot
+    public Bounds Bounds { get { return _sr.bounds; } } // for selection check by touch input
 
+    [SerializeField] private float _speed;
     private SpriteRenderer _sr;
     private BoardItemData _data;
 
@@ -45,9 +52,13 @@ public class BoardItem : MonoBehaviour
 
     private void Update()
     {
+        // move toward new slot
         if (Move)
         {
-            Position = Vector2.MoveTowards(Position, TargetPosition, 3 * Time.deltaTime);
+            var offset = TargetPosition - Position;
+            var speed = _speed + Mathf.Abs(Mathf.FloorToInt(offset.x + offset.y)) * 0.7f;
+
+            Position = Vector2.MoveTowards(Position, TargetPosition, speed * GameManager.Instance.deltaTime);
 
             if ((Position - TargetPosition).sqrMagnitude < 0.01f)
             {
@@ -57,13 +68,25 @@ public class BoardItem : MonoBehaviour
         }
     }
 
-    public void OnSwiped(Board board)
+    /// <summary>
+    /// called when screen swiped
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="direction"></param>
+    /// <param name="slot"></param>    
+    public void OnSwiped(Board board, int direction, BoardSlot slot)
     {
-        _data.OnSwiped(board);
+        _data.OnSwiped(board, direction, slot);
     }
 
-    public void OnDestroyed(Board board, BoardItemType destroyer, BoardSlot slot)
+    /// <summary>
+    /// called when removed
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="destroyer"></param>
+    /// <param name="slot"></param>
+    public void OnRemoved(Board board, BoardItemType destroyer, BoardSlot slot)
     {
-        _data.OnDestroyed(board, destroyer, slot);
+        _data.OnRemoved(board, destroyer, slot);
     }
 }

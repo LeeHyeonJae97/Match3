@@ -11,6 +11,7 @@ public class MenuCanvas : MonoBehaviour
     [SerializeField] private Button _quitButton;
     [SerializeField] private Button _closeButton;
     [SerializeField] private GameObject _menuPanel;
+    [SerializeField] private GameEventChannel _gameEventChannel;
 
     private void Awake()
     {
@@ -23,16 +24,20 @@ public class MenuCanvas : MonoBehaviour
 
     private void OnClickMenuButton()
     {
+        _gameEventChannel.Pause();
+
         _menuPanel.SetActive(true);
     }
 
     private void OnClickQuitButton()
     {
-        SceneManager.LoadScene("Stage");
+        SceneManager.LoadScene("Lobby");
     }
 
     private void OnClickCloseButton()
     {
+        _gameEventChannel.Resume();
+
         _menuPanel.SetActive(false);
     }
 }

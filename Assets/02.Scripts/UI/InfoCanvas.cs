@@ -9,24 +9,28 @@ public class InfoCanvas : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private TextMeshProUGUI _currentTryCount;
     [SerializeField] private TextMeshProUGUI _currentClearedCount;
-    [SerializeField] private Image _clearedConditionTypeImage;
-    [SerializeField] private Board _board;
+    [SerializeField] private Image _clearConditionTypeImage;
+    private StageEventChannel _stageEventChannel;
+
+    private void Awake()
+    {
+        _stageEventChannel = EventChannelStorage.Get<StageEventChannel>();
+
+        _levelText.text = $"Level {Stage.Instance.Data.Level}";
+        var clearCondition = Stage.Instance.Data.ClearCondition;
+        _clearConditionTypeImage.sprite = BoardItemDataStorage.Get(clearCondition.Type, clearCondition.Color).Sprite;
+    }
 
     private void OnEnable()
     {
-        // initialize ui
-        _levelText.text = $"{_board.Data.Level}";
-        _clearedConditionTypeImage.sprite = _board.ClearedCondition.Sprite;
-
-        // add event
-        _board.onCurrentClearedCountUpdated += OnCurrentClearedCountUpdated;
-        _board.onCurrentTryCountUpdated += OnCurrentTryCountUpdated;
+        _stageEventChannel.OnCurrentClearCountUpdated += OnCurrentClearedCountUpdated;
+        _stageEventChannel.OnCurrentTryCountUpdated += OnCurrentTryCountUpdated;
     }
 
     private void OnDisable()
     {
-        _board.onCurrentClearedCountUpdated -= OnCurrentClearedCountUpdated;
-        _board.onCurrentTryCountUpdated -= OnCurrentTryCountUpdated;
+        _stageEventChannel.OnCurrentClearCountUpdated -= OnCurrentClearedCountUpdated;
+        _stageEventChannel.OnCurrentTryCountUpdated -= OnCurrentTryCountUpdated;
     }
 
     private void OnCurrentTryCountUpdated(int value)

@@ -8,31 +8,33 @@ using UnityEngine.UI;
 public class StageSlot : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _levelText;
+    [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private Button _slotButton;
-    [SerializeField] private BoardDataAnchor _boardDataAnchor;
-    private BoardData _data;
+    [SerializeField] private StageDataAnchor _stageDataAnchor;
+    private StageData _stageData;
 
     private void Awake()
     {
         _slotButton.onClick.AddListener(OnClickSlotButton);
     }
 
-    public void Init(BoardData data)
+    public void Init(StageData stageData)
     {
-        if (data == null)
+        if (stageData == null)
         {
             Destroy(gameObject);
             return;
         }
 
-        _data = data;
+        _stageData = stageData;
 
-        _levelText.text = $"{_data.Level}";
+        _levelText.text = $"Level {_stageData.Level}";
+        _descriptionText.text = $"{_stageData.Description}";
     }
 
     private void OnClickSlotButton()
     {
-        _boardDataAnchor.Data = _data;
+        _stageDataAnchor.Value = _stageData;
         SceneManager.LoadScene("Play");
     }
 }

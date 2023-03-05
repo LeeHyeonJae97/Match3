@@ -10,25 +10,32 @@ public class ClearCanvas : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private Button _quitButton;
-    [SerializeField] private Board _board;
+    private GameEventChannel _gameEventChannel;
 
     private void Awake()
     {
-        _board.onCleared += OnCleared;
+        _gameEventChannel = EventChannelStorage.Get<GameEventChannel>();
+
+        _gameEventChannel.OnCleared += OnCleared;
         _quitButton.onClick.AddListener(OnClickQuitButton);
 
         gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        _gameEventChannel.OnCleared -= OnCleared;
+    }
+
     private void OnCleared()
     {
-        _levelText.text = $"{_board.Data.Level}";
+        _levelText.text = $"Level {Stage.Instance.Data.Level}";
 
         gameObject.SetActive(true);
     }
 
     private void OnClickQuitButton()
     {
-        SceneManager.LoadScene("Stage");
+        SceneManager.LoadScene("Lobby");
     }
 }

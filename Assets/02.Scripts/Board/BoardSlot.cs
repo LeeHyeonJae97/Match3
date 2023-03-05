@@ -8,11 +8,13 @@ public class BoardSlot
     public int Row => _row;
     public int Column => _column;
     public Vector2 Position => _position;
-    public bool Refreshed { get; set; }
-    public int HorizontallyRemovedCount { get; set; }
-    public int VerticallyRemovedCount { get; set; }
-    public int GroupIndex { get; set; }
-    public BoardItem Item { get; set; }
+    public bool Refreshed { get; set; }               // is moved toward new slot recently
+    public int HorizontallyRemovedCount { get; set; } // how many items on same row are removed simultaneously
+    public int VerticallyRemovedCount { get; set; }   // how many items on same column are removed simultaneously
+    public int GroupIndex { get; set; }               // item group's index that removed together
+    public bool Removed { get; set; }                 // if true, act like removed already
+    public BoardItem Item { get; set; }               // item that currently in this slot
+    
 
     [SerializeField] private int _row;
     [SerializeField] private int _column;
@@ -39,9 +41,11 @@ public class BoardSlot
         HorizontallyRemovedCount = 0;
         VerticallyRemovedCount = 0;
         GroupIndex = 0;
+        Removed = false;
         Item = null;
     }
 
+    // reset current state
     public void Reset()
     {
         Refreshed = false;
@@ -50,18 +54,28 @@ public class BoardSlot
         GroupIndex = 0;
     }
 
-    public void OnSwiped(Board board)
+    /// <summary>
+    /// called when screen swiped
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="direction"></param>    
+    public void OnSwiped(Board board, int direction)
     {
         if (Item == null) return;
 
-        Item.OnSwiped(board);
+        Item.OnSwiped(board, direction, this);
     }
 
-    public void OnDestroyed(Board board, BoardItemType destroyer)
+    /// <summary>
+    /// called when removed
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="destroyer"></param>
+    public void OnRemoved(Board board, BoardItemType destroyer)
     {
         if (Item == null) return;
 
-        Item.OnDestroyed(board, destroyer, this);
+        Item.OnRemoved(board, destroyer, this);
     }
 
     public override string ToString()

@@ -121,7 +121,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 192
+        y: 256
         width: 64
         height: 64
       alignment: 0
@@ -131,8 +131,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9d275307babc21419e29bcb8dcd66b0
+      spriteID: 5e9c97451fd2ff540b3c6b649c952120
       internalID: 536241576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HSRed
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8116792184afa2d4f97b5b44edb0cc39
+      internalID: -309614275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VSRed
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13a32deb01b9a1444b305d4913b19aee
+      internalID: 909688744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WRed
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f38d29bc602b30a4a8d0735cf3ec08e8
+      internalID: 975082304
       vertices: []
       indices: 
       edges: []
@@ -141,7 +204,7 @@ TextureImporter:
       name: Green
       rect:
         serializedVersion: 2
-        x: 66
+        x: 0
         y: 192
         width: 64
         height: 64
@@ -152,14 +215,35 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f3826ba2fe08fcd499b485fc3fd97f80
+      spriteID: 30374a0bdd29adc40881dda2eea1156a
       internalID: -527743038
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Yellow
+      name: HSGreen
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27b707cd702fbed438354914c057accd
+      internalID: -1616531346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VSGreen
       rect:
         serializedVersion: 2
         x: 128
@@ -173,14 +257,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b743fde6ab352174997e01e0d640f816
-      internalID: -415397099
+      spriteID: fffa660b3f001f9468493877eeeeb919
+      internalID: 1809932192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blue
+      name: WGreen
       rect:
         serializedVersion: 2
         x: 192
@@ -194,14 +278,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dc887fe92819d314882a4192effbc664
-      internalID: 1183527237
+      spriteID: 9543935a7e20b8a499345b76681f66c4
+      internalID: 489034881
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StripedRed
+      name: Yellow
       rect:
         serializedVersion: 2
         x: 0
@@ -215,17 +299,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa19b2cee5ca0ec42a791a84615cf853
-      internalID: 1217893737
+      spriteID: 7ad92b8c1b52c3641a73b92405481033
+      internalID: -415397099
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StripedGreen
+      name: HSYellow
       rect:
         serializedVersion: 2
-        x: 65
+        x: 64
         y: 128
         width: 64
         height: 64
@@ -236,14 +320,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fccdcea3fc0ab4f42855e2b28cd16373
-      internalID: 635901326
+      spriteID: 75d5e550dfab6084297328d96688f7e7
+      internalID: -2010835590
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StripedYellow
+      name: VSYellow
       rect:
         serializedVersion: 2
         x: 128
@@ -257,14 +341,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86f27bc45e4e4bb41aada69a67f58fdf
-      internalID: -1244628290
+      spriteID: 91e8b7aa4e69db14c9f335496f7e104a
+      internalID: -128568437
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StripedBlue
+      name: WYellow
       rect:
         serializedVersion: 2
         x: 192
@@ -278,14 +362,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a3d4788bb628724a8b2e227558de2c3
-      internalID: 10622980
+      spriteID: 076b41b9454b20041a2039dd50afbba7
+      internalID: -2052429260
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WrappedRed
+      name: Blue
       rect:
         serializedVersion: 2
         x: 0
@@ -299,14 +383,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 087f20671fda1df408fe7583b4dc6b5d
-      internalID: -1687821230
+      spriteID: 27d614fe80ad7cb4d92d575c11005588
+      internalID: 1183527237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WrappedGreen
+      name: HSBlue
       rect:
         serializedVersion: 2
         x: 64
@@ -320,14 +404,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1240146b1dc1e974c8c7bee505290ef1
-      internalID: -674080240
+      spriteID: 6d53e8b455b58144287240a1e443c734
+      internalID: -163073689
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WrappedYellow
+      name: VSBlue
       rect:
         serializedVersion: 2
         x: 128
@@ -341,14 +425,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d399338a1b8f34b4aad7a0bc077c5949
-      internalID: 1173969994
+      spriteID: 40282779c12b35d4cbc05e67405bcc54
+      internalID: 1297178144
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WrappedBlue
+      name: WBlue
       rect:
         serializedVersion: 2
         x: 192
@@ -362,8 +446,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1527b16a4dce5440968c8998ed5104e
-      internalID: 863445477
+      spriteID: 174198aa6c5cc7041a5f8a1185d112e2
+      internalID: -1482756514
       vertices: []
       indices: 
       edges: []
@@ -383,7 +467,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0843f2389f986fc448ebde406749270e
+      spriteID: 329eea78acc315b46998c9b93ca7f91c
       internalID: -1806046373
       vertices: []
       indices: 
@@ -393,7 +477,7 @@ TextureImporter:
       name: Ball
       rect:
         serializedVersion: 2
-        x: 65
+        x: 64
         y: 0
         width: 64
         height: 64
@@ -404,7 +488,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c15a991df8dcdc54185215fb2f115e3e
+      spriteID: 775f38a7c0ebefc4faf247f56d4c9718
       internalID: 1060218428
       vertices: []
       indices: 
@@ -414,7 +498,7 @@ TextureImporter:
       name: Hall
       rect:
         serializedVersion: 2
-        x: 129
+        x: 128
         y: 0
         width: 64
         height: 64
@@ -425,7 +509,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a0641216767d46a4780e51b74154f331
+      spriteID: f8356a2a54dc6cd4fad298856631a7ca
       internalID: -1105868934
       vertices: []
       indices: 
@@ -442,19 +526,23 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      WrappedRed: -1687821230
       Ball: 1060218428
+      WBlue: -1482756514
       Hall: -1105868934
-      WrappedYellow: 1173969994
+      HSYellow: -2010835590
+      HSBlue: -163073689
+      WGreen: 489034881
       Green: -527743038
-      WrappedBlue: 863445477
-      StripedRed: 1217893737
       Rainbow: -1806046373
-      WrappedGreen: -674080240
-      StripedGreen: 635901326
       Red: 536241576
-      StripedBlue: 10622980
-      StripedYellow: -1244628290
+      HSRed: -309614275
+      VSYellow: -128568437
+      VSBlue: 1297178144
+      HSGreen: -1616531346
+      VSRed: 909688744
+      VSGreen: 1809932192
+      WYellow: -2052429260
+      WRed: 975082304
       Yellow: -415397099
       Blue: 1183527237
   spritePackingTag: 
