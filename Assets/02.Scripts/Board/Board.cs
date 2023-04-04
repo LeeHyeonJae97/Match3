@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    public int Row { get; private set; }
-    public int Column { get; private set; }
-    public BoardSlot[,] Slots { get; private set; }
+    public int Row => _boardData.Row;
+    public int Column => _boardData.Column;
+    public BoardSlot[,] Slots => _boardData.Slots;
     public List<BoardSlot> Matched { get; set; } = new List<BoardSlot>(); // matched slots
 
-    [SerializeField] private BoardItem _itemPrefab;
+    [SerializeField] private BoardData _boardData;
     private Queue<BoardItem> _items = new Queue<BoardItem>();             // item pool
     private BoardSlot _selected;                                          // selected slot by touch input
     private StageEventChannel _stageEventChannel;
@@ -22,16 +22,16 @@ public class Board : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.Instance.onTouched += OnTouched;
-        InputManager.Instance.onScrolled += OnScrolled;
-        InputManager.Instance.onReleased += OnReleased;
+        InputManager.Instance.OnTouched += OnTouched;
+        InputManager.Instance.OnScrolled += OnScrolled;
+        InputManager.Instance.OnReleased += OnReleased;
     }
 
     private void OnDisable()
     {
-        InputManager.Instance.onTouched -= OnTouched;
-        InputManager.Instance.onScrolled -= OnScrolled;
-        InputManager.Instance.onReleased -= OnReleased;
+        InputManager.Instance.OnTouched -= OnTouched;
+        InputManager.Instance.OnScrolled -= OnScrolled;
+        InputManager.Instance.OnReleased -= OnReleased;
     }
 
     /// <summary>
@@ -43,32 +43,7 @@ public class Board : MonoBehaviour
         transform.position = Vector3.zero;
         transform.localScale = new Vector3(data.BoardLayout.Size * data.BoardLayout.Column + data.BoardLayout.Spacing * (data.BoardLayout.Column - 1), data.BoardLayout.Size * data.BoardLayout.Row + data.BoardLayout.Spacing * (data.BoardLayout.Row - 1));
 
-        Row = data.BoardLayout.Row;
-        Column = data.BoardLayout.Column;
-
-        Slots = new BoardSlot[Row * 2, Column];
-
-        for (int r = 0; r < Row * 2; r++)
-        {
-            for (int c = 0; c < Column; c++)
-            {
-                // copy data's slot
-                Slots[r, c] = new BoardSlot(data.Slots[r * Column + c]);
-
-                if (r < Row)
-                {
-                    // instantiate and initialize item
-                    var item = Instantiate(_itemPrefab);
-
-                    item.transform.localScale = Vector2.one * data.BoardLayout.Size;
-                    item.transform.SetParent(transform);
-                    item.Position = Slots[r, c].Position;
-                    item.Data = data.ItemData[r * Column + c];
-
-                    Slots[r, c].Item = item;
-                }
-            }
-        }
+        _boardData.Initialize(data);
     }
 
     /// <summary>

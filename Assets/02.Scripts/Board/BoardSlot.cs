@@ -14,6 +14,8 @@ public class BoardSlot
     public int GroupIndex { get; set; }               // item group's index that removed together
     public bool Removed { get; set; }                 // if true, act like removed already
     public BoardItem Item { get; set; }               // item that currently in this slot
+
+    public bool Empty => Item == null;
     
 
     [SerializeField] private int _row;

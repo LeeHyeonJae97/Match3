@@ -1,49 +1,15 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InputManager : MonoBehaviour
+public class NewInputManager : MonoBehaviour
 {
-    public static InputManager Instance { get; private set; }
-
-    [SerializeField] private GameEventChannel _gameEventChannel;
     private Vector3 _mouse;
 
     public UnityAction<Vector2> OnTouched;
     public UnityAction OnReleased;
     public UnityAction<Vector2> OnScrolled;
-
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-
-        _gameEventChannel.OnPaused += OnPaused;
-        _gameEventChannel.OnResumed += OnResumed;
-    }
-
-    private void OnDestroy()
-    {
-        _gameEventChannel.OnPaused -= OnPaused;
-        _gameEventChannel.OnResumed -= OnResumed;
-    }
-
-    private void OnPaused()
-    {
-        enabled = false;
-    }
-
-    private void OnResumed()
-    {
-        enabled = true;
-    }
 
     private void Update()
     {
