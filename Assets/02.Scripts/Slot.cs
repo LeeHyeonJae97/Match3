@@ -7,16 +7,7 @@ public class Slot
 {
     public int RowScore { get; set; }
     public int ColumnScore { get; set; }    
-    //public Vector2Int Score
-    //{
-    //    get { return new Vector2Int(RowScore, ColumnScore); }
-
-    //    set
-    //    {
-    //        RowScore = value.x;
-    //        ColumnScore = value.y;
-    //    }
-    //}
+    public int MatchGroup { get; set; }
     public bool Refreshed { get; set; }
 
     public Slot()
@@ -28,12 +19,7 @@ public class Slot
     {
         RowScore = 0;
         ColumnScore = 0;
-        //Score = Vector2Int.zero;
+        MatchGroup = 0;
         Refreshed = false;
-    }
-
-    public override string ToString()
-    {
-        return $"({RowScore},{ColumnScore}) / {Refreshed}";
     }
 }

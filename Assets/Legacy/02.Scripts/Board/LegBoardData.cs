@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
-public class BoardData : ScriptableObject
+public class LegBoardData : ScriptableObject
 {
     public int Row { get; private set; }
     public int Column { get; private set; }

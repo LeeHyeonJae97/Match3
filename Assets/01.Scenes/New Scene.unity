@@ -200,6 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66b4ddeaab2c98e47a1088f882f924f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _data: {fileID: 11400000, guid: ca16808f1780fdc4b97c63159b720c3c, type: 2}
   _layout: {fileID: 1804044584}
 --- !u!4 &364856740
 Transform:
@@ -329,8 +330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f6efc773e49e3447a2efad34dc38dbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _row: 5
-  _column: 5
+  _row: 7
+  _column: 7
   _size: 0.5
   _spacing: 0.1
 --- !u!4 &1804044585

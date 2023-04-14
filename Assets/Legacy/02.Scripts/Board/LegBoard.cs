@@ -9,7 +9,7 @@ public class LegBoard : MonoBehaviour
     public BoardSlot[,] Slots => _boardData.Slots;
     public List<BoardSlot> Matched { get; set; } = new List<BoardSlot>(); // matched slots
 
-    [SerializeField] private BoardData _boardData;
+    [SerializeField] private LegBoardData _boardData;
     private Queue<BoardItem> _items = new Queue<BoardItem>();             // item pool
     private BoardSlot _selected;                                          // selected slot by touch input
     private StageEventChannel _stageEventChannel;

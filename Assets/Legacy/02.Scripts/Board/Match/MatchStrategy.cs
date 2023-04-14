@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Match", menuName = "ScriptableObject/Board/Match")]
 public class MatchStrategy : ScriptableObject
 {
-    [SerializeField] private BoardData _boardData;
+    [SerializeField] private LegBoardData _boardData;
 
     public void Match(int row, int column)
     {

@@ -41,7 +41,7 @@ public class BoardItem : MonoBehaviour
     public bool Move { get; set; }                      // is item moving toward new slot
     public Bounds Bounds { get { return _sr.bounds; } } // for selection check by touch input
 
-    [SerializeField] private BoardData _boardData;
+    [SerializeField] private LegBoardData _boardData;
     [SerializeField] private float _speed;
     private SpriteRenderer _sr;
     private BoardItemData _data;

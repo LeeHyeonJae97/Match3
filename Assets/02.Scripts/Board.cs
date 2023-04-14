@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    [SerializeField] private BoardData _data;
     [SerializeField] private BoardLayout _layout;
     private List<Item> _items;
     private Slot[,] _slots;
@@ -58,6 +59,29 @@ public class Board : MonoBehaviour
         }
     }
 
+    public void Load()
+    {
+        var colors = _data.Load();
+
+        for (int i = 0; i < _items.Count; i++)
+        {
+            _items[i].SetColor(colors[i]);
+        }
+    }
+
+    public void Save()
+    {
+        _data.Save(_items);
+    }
+
+    public void Shuffle()
+    {
+        foreach (var item in _items)
+        {
+            item.SetColor();
+        }
+    }
+
     private void OnDrawGizmos()
     {
         DrawItems();
@@ -93,11 +117,14 @@ public class Board : MonoBehaviour
                     var slot = _slots[row, column];
                     var rs = slot.RowScore;
                     var cs = slot.ColumnScore;
+                    var mg = slot.MatchGroup;
                     var refreshed = slot.Refreshed;
 
                     var position = _layout.GetPosition(row, column);
 
-                    UnityEditor.Handles.Label(position, $"({rs},{cs}) / {refreshed}");
+                    position.x -= _items[0].transform.localScale.x / 4;
+
+                    UnityEditor.Handles.Label(position , $"({rs},{cs}) / {mg} / {refreshed}");
                 }
             }
         }

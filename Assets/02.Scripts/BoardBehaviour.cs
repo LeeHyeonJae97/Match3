@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BoardBehaviour : MonoBehaviour
@@ -49,6 +50,35 @@ public class BoardBehaviour : MonoBehaviour
             }
 
             _matched = new List<Item>();
+
+            do
+            {
+                for (int i = 0; i < _matched.Count; i++)
+                {
+                    _matched[i].SetColor();
+                }
+
+                _matched.Clear();
+
+                Match(_matched);
+            }
+            while (_matched.Count > 0);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            _board.Save();
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            _board.Load();
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            _board.Shuffle();
         }
     }
 
@@ -66,46 +96,23 @@ public class BoardBehaviour : MonoBehaviour
         _inputManager.OnReleased -= OnReleased;
     }
 
-    public bool Match()
+    public bool Matchable()
     {
-        if (_matchCalledTime == Time.time) return false;
-
-        _matchCalledTime = Time.time;
-
-        bool matched = Match(_matched);
-
-        if (matched)
-        {
-            var counts = new int[_layout.Column];
-
-            Refill(counts, _matched);
-            Drop(counts);
-        }
-        Reset();
-
-        return matched;
-    }
-
-    private bool Match(List<Item> matched)
-    {
-        MatchRow();
-        MatchColumn();
-
-        return matched.Count > 0;
+        return MatchRow() || MatchColumn();
 
         // LOCAL FUNCTION
-        void MatchRow()
+        bool MatchRow()
         {
             for (int r = 0; r < _layout.Row; r++)
             {
-                var color = NewItemColor.None;
+                var color = ItemColor.None;
                 var score = 1;
 
                 for (int c = 0; c < _layout.Column; c++)
                 {
                     var item = _board.GetItem(r, c);
 
-                    if (color != NewItemColor.None && item != null && item.Color == color)
+                    if (color != ItemColor.None && item != null && item.Color == color)
                     {
                         score++;
 
@@ -113,10 +120,7 @@ public class BoardBehaviour : MonoBehaviour
                         {
                             for (int i = 0; i < score; i++)
                             {
-                                var slot = _board.GetSlot(r, c - i);
-                                slot.RowScore = Mathf.Max(slot.RowScore, score);
-
-                                matched.Add(_board.GetItem(r, c - i));
+                                return true;
                             }
                         }
                     }
@@ -126,14 +130,151 @@ public class BoardBehaviour : MonoBehaviour
                         {
                             for (int i = 1; i <= score; i++)
                             {
+                                return true;
+                            }
+                        }
+
+                        color = item == null ? ItemColor.None : item.Color;
+                        score = 1;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // LOCAL FUNCTION
+        bool MatchColumn()
+        {
+            for (int c = 0; c < _layout.Column; c++)
+            {
+                var color = ItemColor.None;
+                var score = 1;
+
+                for (int r = 0; r < _layout.Row; r++)
+                {
+                    var item = _board.GetItem(r, c);
+
+                    if (color != ItemColor.None && item != null && item.Color == color)
+                    {
+                        score++;
+
+                        if (r == _layout.Row - 1 && score >= 3)
+                        {
+                            for (int i = 0; i < score; i++)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (score >= 3)
+                        {
+                            for (int i = 1; i <= score; i++)
+                            {
+                                return true;
+                            }
+                        }
+
+                        color = item == null ? ItemColor.None : item.Color;
+                        score = 1;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public void Match()
+    {
+        if (!Validate()) return;
+
+        StartCoroutine(CoMatch());
+
+        // LOCAL FUNCTION
+        bool Validate()
+        {
+            if (_matchCalledTime == Time.time) return false;
+
+            _matchCalledTime = Time.time;
+
+            return true;
+        }
+
+        // LOCAL FUNCTION
+        IEnumerator CoMatch()
+        {
+            yield return new WaitForEndOfFrame();
+
+            Match(_matched);
+
+            if (_matched.Count > 0)
+            {
+                yield return StartCoroutine(CoRefill(_matched));
+                Drop();
+            }
+            Reset();
+        }
+    }
+
+    private void Match(List<Item> matched)
+    {
+        var matchGroup = 0;
+
+        MatchRow();
+        MatchColumn();
+
+        // LOCAL FUNCTION
+        void MatchRow()
+        {
+            for (int r = 0; r < _layout.Row; r++)
+            {
+                var color = ItemColor.None;
+                var score = 1;
+
+                for (int c = 0; c < _layout.Column; c++)
+                {
+                    var item = _board.GetItem(r, c);
+
+                    if (color != ItemColor.None && item != null && item.Color == color)
+                    {
+                        score++;
+
+                        if (c == _layout.Column - 1 && score >= 3)
+                        {
+                            ++matchGroup;
+
+                            for (int i = 0; i < score; i++)
+                            {
                                 var slot = _board.GetSlot(r, c - i);
+
                                 slot.RowScore = Mathf.Max(slot.RowScore, score);
+                                slot.MatchGroup = matchGroup;
+
+                                matched.Add(_board.GetItem(r, c - i));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (score >= 3)
+                        {
+                            ++matchGroup;
+
+                            for (int i = 1; i <= score; i++)
+                            {
+                                var slot = _board.GetSlot(r, c - i);
+
+                                slot.RowScore = Mathf.Max(slot.RowScore, score);
+                                slot.MatchGroup = matchGroup;
 
                                 matched.Add(_board.GetItem(r, c - i));
                             }
                         }
 
-                        color = item == null ? NewItemColor.None : item.Color;
+                        color = item == null ? ItemColor.None : item.Color;
                         score = 1;
                     }
 
@@ -147,23 +288,41 @@ public class BoardBehaviour : MonoBehaviour
         {
             for (int c = 0; c < _layout.Column; c++)
             {
-                var color = NewItemColor.None;
+                var color = ItemColor.None;
                 var score = 1;
 
                 for (int r = 0; r < _layout.Row; r++)
                 {
                     var item = _board.GetItem(r, c);
 
-                    if (color != NewItemColor.None && item != null && item.Color == color)
+                    // to prevent dropping items are matched
+                    if (item == null) return;
+
+                    if (color != ItemColor.None && item != null && item.Color == color)
                     {
                         score++;
 
                         if (r == _layout.Row - 1 && score >= 3)
                         {
+                            var mg = 0;
+
+                            for (int i = 0; i < score; i++)
+                            {
+                                var tmp = _board.GetSlot(r - i, c).MatchGroup;
+
+                                if (tmp > 0)
+                                {
+                                    mg = tmp;
+                                }
+                            }
+                            if (mg == 0) mg = ++matchGroup;
+
                             for (int i = 0; i < score; i++)
                             {
                                 var slot = _board.GetSlot(r - i, c);
-                                slot.RowScore = Mathf.Max(slot.RowScore, score);
+
+                                slot.ColumnScore = Mathf.Max(slot.ColumnScore, score);
+                                slot.MatchGroup = mg;
 
                                 matched.Add(_board.GetItem(r - i, c));
                             }
@@ -173,69 +332,139 @@ public class BoardBehaviour : MonoBehaviour
                     {
                         if (score >= 3)
                         {
+                            var mg = 0;
+
+                            for (int i = 0; i < score; i++)
+                            {
+                                var tmp = _board.GetSlot(r - i, c).MatchGroup;
+
+                                if (tmp > 0)
+                                {
+                                    mg = tmp;
+                                }
+                            }
+                            if (mg == 0) mg = ++matchGroup;
+
                             for (int i = 1; i <= score; i++)
                             {
                                 var slot = _board.GetSlot(r - i, c);
-                                slot.RowScore = Mathf.Max(slot.RowScore, score);
+
+                                slot.ColumnScore = Mathf.Max(slot.ColumnScore, score);
+                                slot.MatchGroup = mg;
 
                                 matched.Add(_board.GetItem(r - i, c));
                             }
                         }
 
-                        color = item == null ? NewItemColor.None : item.Color;
+                        color = item == null ? ItemColor.None : item.Color;
                         score = 1;
                     }
 
                     //Debug.Log($"ColumnMatchable : {column} {r} {color} {item?.Color} {count}");
                 }
             }
-
         }
     }
 
-    private void Refill(int[] counts, List<Item> matched)
+    IEnumerator CoRefill(List<Item> matched)
     {
+        matched = matched.Distinct().ToList();
+
+        matched.Sort((l, r) =>
+        {
+            _layout.GetRowColumn(l.transform.position, out var lr, out var lc);
+            _layout.GetRowColumn(r.transform.position, out var rr, out var rc);
+
+            var ls = _board.GetSlot(lr, lc);
+            var rs = _board.GetSlot(rr, rc);
+
+            var comp = ls.MatchGroup.CompareTo(rs.MatchGroup);
+
+            if (comp == 0)
+            {
+                comp = ls.Refreshed ? -1 : 1;
+            }
+
+            return comp;
+        });
+
+        var pivot = default(Item);
+        var matchGroup = 0;
+
+        var cors = new List<Coroutine>();
+
+        var counts = new int[_layout.Column];
+
         foreach (var item in matched)
         {
             _layout.GetRowColumn(item.transform.position, out var row, out var column);
 
             var slot = _board.GetSlot(row, column);
 
-            if (slot.Refreshed && ((slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3))
+            if (slot.MatchGroup == matchGroup || (slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3)
             {
-                item.SetColorSpecial();
+                if (slot.Refreshed && slot.MatchGroup != matchGroup)
+                {
+                    pivot = item;
+                    matchGroup = slot.MatchGroup;
+
+                    item.SetColor();
+                }
+                else
+                {
+                    counts[column]++;
+
+                    var pivotPosition = pivot.transform.position;
+                    var refillPosition = _layout.GetPosition(_layout.Row - 1 + counts[column], column);
+
+                    var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
+
+                    cors.Add(cor);
+                }
             }
             else
             {
                 counts[column]++;
-                item.transform.position = _layout.GetPosition(_layout.Row - 1 + counts[column], column);
+
+                item.transform.position = _layout.GetPosition(_layout.Row - 1 + counts[column], column); ;
                 item.SetColor();
             }
         }
+
+        foreach (var cor in cors)
+        {
+            yield return cor;
+        }
+
+        // LOCAL FUNCTION
+        IEnumerator CoMove(Item item, Vector3 pivot, Vector3 refill)
+        {
+            yield return StartCoroutine(item.CoMove(pivot, 5));
+
+            item.transform.position = refill;
+            item.SetColor();
+        }
     }
 
-    private void Drop(int[] counts)
+    private void Drop()
     {
         // NOTICE :
         // Need to change Algorithm
-        for (int c = 0; c < counts.Length; c++)
+        for (int c = 0; c < _layout.Column; c++)
         {
-            if (counts[c] > 0)
+            int count = 0;
+
+            for (int r = 0; r < _layout.Row + count; r++)
             {
-                int count = 0;
+                var item = _board.GetItem(r, c);
 
-                for (int r = 0; r < _layout.Row + counts[c]; r++)
+                if (item == null)
                 {
-                    var item = _board.GetItem(r, c);
-
-                    if (item == null)
-                    {
-                        count++;
-                    }
-                    else if (count > 0)
-                    {
-                        StartCoroutine(item.CoDrop(count));
-                    }
+                    count++;
+                }
+                else if (count > 0)
+                {
+                    StartCoroutine(item.CoDrop(count));
                 }
             }
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum NewItemColor { Red, Green, Blue, None = -1 }
+public enum ItemColor { Red, Green, Blue, White, Black, Gray, None = -1 }
 
 public class Item : MonoBehaviour
 {
@@ -11,22 +11,17 @@ public class Item : MonoBehaviour
     [SerializeField] private BoardLayout _layout;
     [SerializeField] private Board _board;
 
-    [System.Obsolete] public NewItemColor Color { get; private set; }
-
-    private void Start()
-    {
-        SetColor();
-    }
+    [System.Obsolete] public ItemColor Color { get; private set; }
 
     public void Swap(Vector2Int direction)
     {
-        if (GetSwapped(out var swapped))
+        if (GetSwappedItem(out var swapped))
         {
             StartCoroutine(CoSwap());
         }
 
         // LOCAL FUNCTION
-        bool GetSwapped(out Item swapped)
+        bool GetSwappedItem(out Item swapped)
         {
             _layout.GetRowColumn(transform.position, out var row, out var column);
 
@@ -55,9 +50,7 @@ public class Item : MonoBehaviour
             _board.GetSlot(transform.position).Refreshed = true;
             _board.GetSlot(swapped.transform.position).Refreshed = true;
 
-            bool matched = _boardBehaviour.Match();
-
-            if (!matched)
+            if (!_boardBehaviour.Matchable())
             {
                 cors[0] = StartCoroutine(CoMove(swapped.transform.position));
                 cors[1] = StartCoroutine(swapped.CoMove(transform.position));
@@ -67,26 +60,55 @@ public class Item : MonoBehaviour
                     yield return cor;
                 }
             }
+            else
+            {
+                _boardBehaviour.Match();
+            }
         }
     }
 
     public IEnumerator CoDrop(int count)
     {
-        for (int i = 0; i < count; i++)
-        {
-            _layout.GetRowColumn(transform.position, out var row, out var column);
+        yield return StartCoroutine(CoDrop());
+        SetRefreshed();
+        Match();
 
-            yield return StartCoroutine(CoMove(_layout.GetPosition(row - 1, column)));
+        // LOCAL FUNTION
+        IEnumerator CoDrop()
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _layout.GetRowColumn(transform.position, out var row, out var column);
+
+                yield return StartCoroutine(CoMove(_layout.GetPosition(row - 1, column)));
+            }
         }
 
-        _board.GetSlot(transform.position).Refreshed = true;
+        // LOCAL FUNCTION
+        void SetRefreshed()
+        {
+            _board.GetSlot(transform.position).Refreshed = true;
+        }
+
+        // LOCAL FUNCTION
+        void Match()
+        {
+            _boardBehaviour.Match();
+        }
+    }
+
+    public IEnumerator CoMove(Vector2 position, float speed)
+    {
+        transform.DOKill(false);
+
+        yield return transform.DOMove(position, 1 / speed).SetEase(Ease.Linear).WaitForCompletion();
     }
 
     private IEnumerator CoMove(Vector2 position)
     {
         transform.DOKill(false);
 
-        yield return transform.DOMove(position, .5f).SetEase(Ease.Linear).WaitForCompletion();
+        yield return transform.DOMove(position, .2f).SetEase(Ease.Linear).WaitForCompletion();
     }
 
     [System.Obsolete]
@@ -95,6 +117,8 @@ public class Item : MonoBehaviour
         _boardBehaviour = boardBehaviour;
         _board = board;
         _layout = layout;
+
+        SetColor();
     }
 
     [System.Obsolete]
@@ -110,20 +134,25 @@ public class Item : MonoBehaviour
             UnityEngine.Color.gray
         };
 
-        var index = Random.Range(0, colors.Length);
+        var color = Random.Range(0, colors.Length);
 
-        Color = (NewItemColor)index;
-        GetComponentInChildren<SpriteRenderer>().color = colors[index];
+        SetColor(color);
     }
 
     [System.Obsolete]
-    public void SetColorSpecial()
+    public void SetColor(int color)
     {
-        Color = NewItemColor.None;
+        var colors = new Color[]
+        {
+            UnityEngine.Color.red,
+            UnityEngine.Color.green,
+            UnityEngine.Color.blue,
+            UnityEngine.Color.white,
+            UnityEngine.Color.black,
+            UnityEngine.Color.gray
+        };
 
-        var sr = GetComponentInChildren<SpriteRenderer>();
-        var color = sr.color;
-        color.a = .5f;
-        sr.color = color;
+        Color = (ItemColor)color;
+        GetComponentInChildren<SpriteRenderer>().color = colors[color];
     }
 }
