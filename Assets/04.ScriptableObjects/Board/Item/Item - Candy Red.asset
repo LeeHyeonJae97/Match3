@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24794bd48d2fca74a9cca709f00d10dc, type: 3}
+  m_Name: Item - Candy Red
+  m_EditorClassIdentifier: 
+  _type: 0
+  _color: 2
+  _sprite: {fileID: 536241576, guid: fd03671d669a3b54294b547840058c12, type: 3}
+  _swappedStrategy: {fileID: 11400000, guid: 24b3e4b854f0fe146947e2125e7926f0, type: 2}
+  _removedStrategy: {fileID: 11400000, guid: d8ce8c8e29df20246affd924a470c401, type: 2}

@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-public class Board : MonoBehaviour
+[CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
+public class Board : ScriptableObject
 {
-    [SerializeField] private BoardData _data;
+    [SerializeField] private int[] _data;
     [SerializeField] private BoardLayout _layout;
-    private List<Item> _items;
+    [SerializeField] private List<Item> _items;
+    private List<ItemBehaviour> _itemsBehaviours;
     private Slot[,] _slots;
 
     private void Awake()
@@ -22,21 +25,21 @@ public class Board : MonoBehaviour
         }
     }
 
-    public void Add(Item item)
+    public void Add(ItemBehaviour item)
     {
-        if (_items == null) _items = new List<Item>();
+        if (_itemsBehaviours == null) _itemsBehaviours = new List<ItemBehaviour>();
 
-        _items.Add(item);
+        _itemsBehaviours.Add(item);
     }
 
-    public Item GetItem(Vector3 position)
+    public ItemBehaviour GetItemBehaviour(Vector3 position)
     {
-        return _items.Find((item) => item.transform.position == position);
+        return _itemsBehaviours.Find((item) => item.transform.position == position);
     }
 
-    public Item GetItem(int row, int column)
+    public ItemBehaviour GetItemBehaviour(int row, int column)
     {
-        return GetItem(_layout.GetPosition(row, column));
+        return GetItemBehaviour(_layout.GetPosition(row, column));
     }
 
     public Slot GetSlot(Vector3 position)
@@ -59,24 +62,54 @@ public class Board : MonoBehaviour
         }
     }
 
+    public Item GetItem(int id)
+    {
+        return _items.Find((item) => item.Id == id);
+    }
+
+    public Item GetItem()
+    {
+        return _items[Random.Range(0, _items.Count)];
+    }
+
     public void Load()
     {
-        var colors = _data.Load();
+        var ids = _data;
 
-        for (int i = 0; i < _items.Count; i++)
+        for (int i = 0; i < _itemsBehaviours.Count; i++)
         {
-            _items[i].SetColor(colors[i]);
+            var item = _items.Find((item) => item.Id == ids[i]);
+
+            Assert.AreEqual(null, item);
+
+            _itemsBehaviours[i].Initialize(item);
+        }
+
+        [System.Obsolete]
+        void LegLoad()
+        {
+            var colors = _data;
+
+            for (int i = 0; i < _itemsBehaviours.Count; i++)
+            {
+                _itemsBehaviours[i].SetColor(colors[i]);
+            }
         }
     }
 
     public void Save()
     {
-        _data.Save(_items);
+        if (_data == null || _data.Length == 0) _data = new int[_itemsBehaviours.Count];
+
+        for (int i = 0; i < _itemsBehaviours.Count; i++)
+        {
+            _data[i] = _itemsBehaviours[i].Data.Id;
+        }
     }
 
     public void Shuffle()
     {
-        foreach (var item in _items)
+        foreach (var item in _itemsBehaviours)
         {
             item.SetColor();
         }
@@ -90,9 +123,9 @@ public class Board : MonoBehaviour
         // LOCAL FUNCTION
         void DrawItems()
         {
-            if (_items == null) return;
+            if (_itemsBehaviours == null) return;
 
-            foreach (var item in _items)
+            foreach (var item in _itemsBehaviours)
             {
                 if (item != null)
                 {
@@ -122,7 +155,7 @@ public class Board : MonoBehaviour
 
                     var position = _layout.GetPosition(row, column);
 
-                    position.x -= _items[0].transform.localScale.x / 4;
+                    position.x -= _itemsBehaviours[0].transform.localScale.x / 4;
 
                     UnityEditor.Handles.Label(position , $"({rs},{cs}) / {mg} / {refreshed}");
                 }
