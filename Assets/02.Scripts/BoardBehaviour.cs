@@ -8,7 +8,7 @@ public class BoardBehaviour : MonoBehaviour
 {
     [SerializeField] private ItemBehaviour _itemPrefab;
     [SerializeField] private Board _board;
-    [SerializeField] private BoardLayout _layout;
+    [SerializeField] private BoardLayout _boardLayout;
     [SerializeField] private InputManager _inputManager;
     private ItemBehaviour _selected;
     private List<ItemBehaviour> _matched;
@@ -21,20 +21,22 @@ public class BoardBehaviour : MonoBehaviour
 
     private void Initialize()
     {
+        _board.Initialize();
+
         _matched = new List<ItemBehaviour>();
 
         Instantiate();
-        //Shuffle();
+        Shuffle();
 
         // LOCAL FUNCTION
         void Instantiate()
         {
-            if (_itemPrefab == null || _layout == null) return;
+            if (_itemPrefab == null || _boardLayout == null) return;
 
-            var row = _layout.Row;
-            var column = _layout.Column;
-            var size = _layout.Size;
-            var spacing = _layout.Spacing;
+            var row = _boardLayout.Row;
+            var column = _boardLayout.Column;
+            var size = _boardLayout.Size;
+            var spacing = _boardLayout.Spacing;
 
             var width = size + spacing;
             var height = size + spacing;
@@ -50,9 +52,7 @@ public class BoardBehaviour : MonoBehaviour
                     item.transform.position = new Vector2(minX + c * width, minY + r * height);
                     item.transform.localScale = Vector2.one * size;
 
-                    item.Initialize(_board.GetItem());
-
-                    //item.Initialize(this, _board, _layout);
+                    item.Initialize(this, _board, _boardLayout, _board.GetItem());
 
                     _board.Add(item);
                 }
@@ -67,8 +67,6 @@ public class BoardBehaviour : MonoBehaviour
                 for (int i = 0; i < _matched.Count; i++)
                 {
                     _matched[i].Initialize(_board.GetItem());
-
-                    //_matched[i].SetColor();
                 }
 
                 _matched.Clear();
@@ -81,23 +79,17 @@ public class BoardBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Test();
-
-        // LOCAL FUNCTION
-        void Test()
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                _board.Save();
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                _board.Load();
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                _board.Shuffle();
-            }
+            _board.Save();
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            _board.Load();
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            _board.Shuffle();
         }
     }
 
@@ -122,28 +114,28 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         bool MatchRow()
         {
-            for (int r = 0; r < _layout.Row; r++)
+            for (int r = 0; r < _boardLayout.Row; r++)
             {
-                var color = ItemColor.None;
+                var item = default(ItemBehaviour);
                 var score = 1;
 
-                for (int c = 0; c < _layout.Column; c++)
+                for (int c = 0; c < _boardLayout.Column; c++)
                 {
-                    var item = _board.GetItemBehaviour(r, c);
+                    var current = _board.GetItemBehaviour(r, c);
 
-                    var same = color != ItemColor.None && item != null && item.Color == color;
+                    var same = item != null && current != null && current.Data.IsSame(item.Data);
 
                     if (same)
                     {
                         score++;
 
-                        if (c == _layout.Column - 1 && score >= 3) return true;
+                        if (c == _boardLayout.Column - 1 && score >= 3) return true;
                     }
                     else
                     {
                         if (score >= 3) return true;
 
-                        color = item == null ? ItemColor.None : item.Color;
+                        item = current;
                         score = 1;
                     }
                 }
@@ -155,28 +147,28 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         bool MatchColumn()
         {
-            for (int c = 0; c < _layout.Column; c++)
+            for (int c = 0; c < _boardLayout.Column; c++)
             {
-                var color = ItemColor.None;
+                var item = default(ItemBehaviour);
                 var score = 1;
 
-                for (int r = 0; r < _layout.Row; r++)
+                for (int r = 0; r < _boardLayout.Row; r++)
                 {
-                    var item = _board.GetItemBehaviour(r, c);
+                    var current = _board.GetItemBehaviour(r, c);
 
-                    var same = color != ItemColor.None && item != null && item.Color == color;
+                    var same = item != null && current != null && current.Data.IsSame(item.Data);
 
                     if (same)
                     {
                         score++;
 
-                        if (r == _layout.Row - 1 && score >= 3) return true;
+                        if (r == _boardLayout.Row - 1 && score >= 3) return true;
                     }
                     else
                     {
                         if (score >= 3) return true;
 
-                        color = item == null ? ItemColor.None : item.Color;
+                        item = current;
                         score = 1;
                     }
                 }
@@ -228,22 +220,22 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         void MatchRow()
         {
-            for (int r = 0; r < _layout.Row; r++)
+            for (int r = 0; r < _boardLayout.Row; r++)
             {
-                var color = ItemColor.None;
+                var item = default(ItemBehaviour);
                 var score = 1;
 
-                for (int c = 0; c < _layout.Column; c++)
+                for (int c = 0; c < _boardLayout.Column; c++)
                 {
-                    var item = _board.GetItemBehaviour(r, c);
+                    var current = _board.GetItemBehaviour(r, c);
 
-                    var same = color != ItemColor.None && item != null && item.Color == color;
+                    var same = item != null && current != null && current.Data.IsSame(item.Data);
 
                     if (same)
                     {
                         score++;
 
-                        var match = c == _layout.Column - 1 && score >= 3;
+                        var match = c == _boardLayout.Column - 1 && score >= 3;
 
                         if (match)
                         {
@@ -279,7 +271,7 @@ public class BoardBehaviour : MonoBehaviour
                             }
                         }
 
-                        color = item == null ? ItemColor.None : item.Color;
+                        item = current;
                         score = 1;
                     }
                 }
@@ -289,23 +281,25 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         void MatchColumn()
         {
-            for (int c = 0; c < _layout.Column; c++)
+            for (int c = 0; c < _boardLayout.Column; c++)
             {
-                var color = ItemColor.None;
+                var item = default(ItemBehaviour);
                 var score = 1;
 
-                for (int r = 0; r < _layout.Row; r++)
+                for (int r = 0; r < _boardLayout.Row; r++)
                 {
-                    var item = _board.GetItemBehaviour(r, c);
+                    var current = _board.GetItemBehaviour(r, c);
 
                     // to prevent dropping items are matched
-                    if (item == null) return;
+                    if (current == null) return;
 
-                    if (color != ItemColor.None && item != null && item.Color == color)
+                    var same = item != null && current != null && current.Data.IsSame(item.Data);
+
+                    if (same)
                     {
                         score++;
 
-                        if (r == _layout.Row - 1 && score >= 3)
+                        if (r == _boardLayout.Row - 1 && score >= 3)
                         {
                             var mg = 0;
 
@@ -327,10 +321,7 @@ public class BoardBehaviour : MonoBehaviour
                                 slot.ColumnScore = Mathf.Max(slot.ColumnScore, score);
                                 slot.MatchGroup = mg;
 
-                                var matchedItem = _board.GetItemBehaviour(r - i, c);
-                                matchedItem.Remove(matched);
-
-                                //matched.Add(matchedItem);
+                                matched.Add(_board.GetItemBehaviour(r - i, c));
                             }
                         }
                     }
@@ -362,7 +353,7 @@ public class BoardBehaviour : MonoBehaviour
                             }
                         }
 
-                        color = item == null ? ItemColor.None : item.Color;
+                        item = current;
                         score = 1;
                     }
                 }
@@ -376,8 +367,8 @@ public class BoardBehaviour : MonoBehaviour
 
         matched.Sort((l, r) =>
         {
-            _layout.GetRowColumn(l.transform.position, out var lr, out var lc);
-            _layout.GetRowColumn(r.transform.position, out var rr, out var rc);
+            _boardLayout.GetRowColumn(l.transform.position, out var lr, out var lc);
+            _boardLayout.GetRowColumn(r.transform.position, out var rr, out var rc);
 
             var ls = _board.GetSlot(lr, lc);
             var rs = _board.GetSlot(rr, rc);
@@ -397,11 +388,11 @@ public class BoardBehaviour : MonoBehaviour
 
         var cors = new List<Coroutine>();
 
-        var counts = new int[_layout.Column];
+        var counts = new int[_boardLayout.Column];
 
         foreach (var item in matched)
         {
-            _layout.GetRowColumn(item.transform.position, out var row, out var column);
+            _boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
 
             var slot = _board.GetSlot(row, column);
 
@@ -412,14 +403,14 @@ public class BoardBehaviour : MonoBehaviour
                     pivot = item;
                     matchGroup = slot.MatchGroup;
 
-                    item.SetColor();
+                    item.Initialize(_board.GetItem());
                 }
                 else
                 {
                     counts[column]++;
 
                     var pivotPosition = pivot.transform.position;
-                    var refillPosition = _layout.GetPosition(_layout.Row - 1 + counts[column], column);
+                    var refillPosition = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column);
 
                     var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
 
@@ -430,8 +421,9 @@ public class BoardBehaviour : MonoBehaviour
             {
                 counts[column]++;
 
-                item.transform.position = _layout.GetPosition(_layout.Row - 1 + counts[column], column); ;
-                item.SetColor();
+                item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column); ;
+
+                item.Initialize(_board.GetItem());
             }
         }
 
@@ -446,7 +438,8 @@ public class BoardBehaviour : MonoBehaviour
             yield return StartCoroutine(item.CoMove(pivot, 5));
 
             item.transform.position = refill;
-            item.SetColor();
+
+            item.Initialize(_board.GetItem());
         }
     }
 
@@ -454,11 +447,11 @@ public class BoardBehaviour : MonoBehaviour
     {
         // NOTICE :
         // Need to change Algorithm
-        for (int c = 0; c < _layout.Column; c++)
+        for (int c = 0; c < _boardLayout.Column; c++)
         {
             int count = 0;
 
-            for (int r = 0; r < _layout.Row + count; r++)
+            for (int r = 0; r < _boardLayout.Row + count; r++)
             {
                 var item = _board.GetItemBehaviour(r, c);
 
@@ -482,7 +475,7 @@ public class BoardBehaviour : MonoBehaviour
 
     private void OnTouched(Vector2 position)
     {
-        _layout.GetRowColumn(position, out var row, out var column);
+        _boardLayout.GetRowColumn(position, out var row, out var column);
 
         _selected = _board.GetItemBehaviour(row, column);
     }

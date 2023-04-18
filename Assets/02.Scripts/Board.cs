@@ -6,14 +6,18 @@ using UnityEngine.Assertions;
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
 public class Board : ScriptableObject
 {
+    public List<ItemBehaviour> ItemBehaviours => _itemBehaviours;
+
     [SerializeField] private int[] _data;
     [SerializeField] private BoardLayout _layout;
     [SerializeField] private List<Item> _items;
-    private List<ItemBehaviour> _itemsBehaviours;
+    private List<ItemBehaviour> _itemBehaviours;
     private Slot[,] _slots;
 
-    private void Awake()
+    public void Initialize()
     {
+        _itemBehaviours = new List<ItemBehaviour>();
+
         _slots = new Slot[_layout.Row, _layout.Column];
 
         for (int row = 0; row < _layout.Row; row++)
@@ -27,14 +31,12 @@ public class Board : ScriptableObject
 
     public void Add(ItemBehaviour item)
     {
-        if (_itemsBehaviours == null) _itemsBehaviours = new List<ItemBehaviour>();
-
-        _itemsBehaviours.Add(item);
+        _itemBehaviours.Add(item);
     }
 
     public ItemBehaviour GetItemBehaviour(Vector3 position)
     {
-        return _itemsBehaviours.Find((item) => item.transform.position == position);
+        return _itemBehaviours.Find((item) => item.transform.position == position);
     }
 
     public ItemBehaviour GetItemBehaviour(int row, int column)
@@ -74,45 +76,17 @@ public class Board : ScriptableObject
 
     public void Load()
     {
-        var ids = _data;
 
-        for (int i = 0; i < _itemsBehaviours.Count; i++)
-        {
-            var item = _items.Find((item) => item.Id == ids[i]);
-
-            Assert.AreEqual(null, item);
-
-            _itemsBehaviours[i].Initialize(item);
-        }
-
-        [System.Obsolete]
-        void LegLoad()
-        {
-            var colors = _data;
-
-            for (int i = 0; i < _itemsBehaviours.Count; i++)
-            {
-                _itemsBehaviours[i].SetColor(colors[i]);
-            }
-        }
     }
 
     public void Save()
     {
-        if (_data == null || _data.Length == 0) _data = new int[_itemsBehaviours.Count];
 
-        for (int i = 0; i < _itemsBehaviours.Count; i++)
-        {
-            _data[i] = _itemsBehaviours[i].Data.Id;
-        }
     }
 
     public void Shuffle()
     {
-        foreach (var item in _itemsBehaviours)
-        {
-            item.SetColor();
-        }
+
     }
 
     private void OnDrawGizmos()
@@ -123,9 +97,9 @@ public class Board : ScriptableObject
         // LOCAL FUNCTION
         void DrawItems()
         {
-            if (_itemsBehaviours == null) return;
+            if (_itemBehaviours == null) return;
 
-            foreach (var item in _itemsBehaviours)
+            foreach (var item in _itemBehaviours)
             {
                 if (item != null)
                 {
@@ -155,7 +129,7 @@ public class Board : ScriptableObject
 
                     var position = _layout.GetPosition(row, column);
 
-                    position.x -= _itemsBehaviours[0].transform.localScale.x / 4;
+                    position.x -= _itemBehaviours[0].transform.localScale.x / 4;
 
                     UnityEditor.Handles.Label(position , $"({rs},{cs}) / {mg} / {refreshed}");
                 }

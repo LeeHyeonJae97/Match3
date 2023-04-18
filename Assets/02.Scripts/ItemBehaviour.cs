@@ -7,13 +7,11 @@ public class ItemBehaviour : MonoBehaviour
 {
     public Item Data => _data;
 
-    [SerializeField] private Board _board;
-    [SerializeField] private BoardLayout _layout;
     private Item _data;
     private BoardBehaviour _boardBehaviour;
+    private Board _board;
+    private BoardLayout _boardLayout;
     private SpriteRenderer _sr;
-
-    [System.Obsolete] public ItemColor Color { get; private set; }
 
     private void Awake()
     {
@@ -22,8 +20,6 @@ public class ItemBehaviour : MonoBehaviour
 
     public void Swap(Vector2Int direction)
     {
-        //_item.SwappedStrategy.OnSwapped(direction, this, _boardBehaviour, _board, _layout);
-
         if (GetSwappedItem(out var swapped))
         {
             StartCoroutine(CoSwap());
@@ -32,12 +28,12 @@ public class ItemBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         bool GetSwappedItem(out ItemBehaviour swapped)
         {
-            _layout.GetRowColumn(transform.position, out var row, out var column);
+            _boardLayout.GetRowColumn(transform.position, out var row, out var column);
 
             var nrow = row + direction.y;
             var ncolumn = column + direction.x;
 
-            swapped = _layout.IsValid(nrow, ncolumn) ? _board.GetItemBehaviour(nrow, ncolumn) : null;
+            swapped = _boardLayout.IsValid(nrow, ncolumn) ? _board.GetItemBehaviour(nrow, ncolumn) : null;
 
             return swapped != null;
         }
@@ -76,11 +72,6 @@ public class ItemBehaviour : MonoBehaviour
         }
     }
 
-    public void Remove(List<ItemBehaviour> matched)
-    {
-        _data.RemovedStrategy?.OnRemoved(matched, this);
-    }
-
     public IEnumerator CoDrop(int count)
     {
         yield return StartCoroutine(CoDrop());
@@ -92,9 +83,9 @@ public class ItemBehaviour : MonoBehaviour
         {
             for (int i = 0; i < count; i++)
             {
-                _layout.GetRowColumn(transform.position, out var row, out var column);
+                _boardLayout.GetRowColumn(transform.position, out var row, out var column);
 
-                yield return StartCoroutine(CoMove(_layout.GetPosition(row - 1, column)));
+                yield return StartCoroutine(CoMove(_boardLayout.GetPosition(row - 1, column)));
             }
         }
 
@@ -123,9 +114,11 @@ public class ItemBehaviour : MonoBehaviour
         yield return transform.DOMove(position, 1 / speed).SetEase(Ease.Linear).WaitForCompletion();
     }
 
-    public void Initialize(BoardBehaviour boardBehaviour, Item item)
+    public void Initialize(BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout, Item item)
     {
         _boardBehaviour = boardBehaviour;
+        _board = board;
+        _boardLayout = boardLayout;
 
         Initialize(item);
     }
@@ -135,50 +128,5 @@ public class ItemBehaviour : MonoBehaviour
         _data = item;
 
         _sr.sprite = item.Sprite;
-    }
-
-    [System.Obsolete]
-    public void Initialize(BoardBehaviour boardBehaviour, Board board, BoardLayout layout)
-    {
-        _boardBehaviour = boardBehaviour;
-        _board = board;
-        _layout = layout;
-
-        SetColor();
-    }
-
-    [System.Obsolete]
-    public void SetColor()
-    {
-        var colors = new Color[]
-        {
-            UnityEngine.Color.red,
-            UnityEngine.Color.green,
-            UnityEngine.Color.blue,
-            UnityEngine.Color.white,
-            UnityEngine.Color.black,
-            UnityEngine.Color.gray
-        };
-
-        var color = Random.Range(0, colors.Length);
-
-        SetColor(color);
-    }
-
-    [System.Obsolete]
-    public void SetColor(int color)
-    {
-        var colors = new Color[]
-        {
-            UnityEngine.Color.red,
-            UnityEngine.Color.green,
-            UnityEngine.Color.blue,
-            UnityEngine.Color.white,
-            UnityEngine.Color.black,
-            UnityEngine.Color.gray
-        };
-
-        Color = (ItemColor)color;
-        GetComponentInChildren<SpriteRenderer>().color = colors[color];
     }
 }

@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemPrefab: {fileID: 2873873919763895067, guid: c2bc5940fdd3836468a6706162f4ab03, type: 3}
   _board: {fileID: 11400000, guid: 1f3e40ab19fea67449659e954c25fbe1, type: 2}
-  _layout: {fileID: 11400000, guid: e00887789661e5d43a1c445ac39af0be, type: 2}
+  _boardLayout: {fileID: 11400000, guid: e00887789661e5d43a1c445ac39af0be, type: 2}
   _inputManager: {fileID: 2045295685}
 --- !u!4 &321643997
 Transform:

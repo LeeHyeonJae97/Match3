@@ -54,12 +54,4 @@ public class BoardLayout : ScriptableObject
 
         return column;
     }
-
-    public BoardLayout(int row, int column, float size, float spacing)
-    {
-        _row = row;
-        _column = column;
-        _size = size;
-        _spacing = spacing;
-    }
 }

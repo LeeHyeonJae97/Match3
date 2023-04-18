@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f6efc773e49e3447a2efad34dc38dbd, type: 3}
   m_Name: BoardLayout
   m_EditorClassIdentifier: 
-  _row: 0
-  _column: 0
-  _size: 0
-  _spacing: 0
+  _row: 6
+  _column: 6
+  _size: 0.6
+  _spacing: 0.1
