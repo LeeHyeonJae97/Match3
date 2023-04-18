@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ItemType { Candy }
-public enum ItemColor { Blue, Green, Red, White, Black, Gray, None = -1 }
+public enum ItemColor { Blue, Green, Red, Yellow, White, Black, Gray, None = -1 }
 
 [CreateAssetMenu(fileName = "Item", menuName = "ScriptableObject/Board/Item/Item")]
 public class Item : ScriptableObject

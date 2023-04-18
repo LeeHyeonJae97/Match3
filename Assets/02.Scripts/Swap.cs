@@ -7,7 +7,7 @@ public class Swap : ItemSwappedStrategy
 {
     protected const string NAME = nameof(Swap);
 
-    public override void OnSwapped(Vector2Int direction, ItemBehaviour item, BoardBehaviour boardBehaviour, Board board, BoardLayout layout)
+    public override void OnSwapped(Vector2Int direction, ItemBehaviour item, BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout)
     {
         if (GetSwappedItem(out var swapped))
         {
@@ -17,12 +17,12 @@ public class Swap : ItemSwappedStrategy
         // LOCAL FUNCTION
         bool GetSwappedItem(out ItemBehaviour swapped)
         {
-            layout.GetRowColumn(item.transform.position, out var row, out var column);
+            boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
 
             var nrow = row + direction.y;
             var ncolumn = column + direction.x;
 
-            swapped = layout.IsValid(nrow, ncolumn) ? board.GetItemBehaviour(nrow, ncolumn) : null;
+            swapped = boardLayout.IsValid(nrow, ncolumn) ? board.GetItemBehaviour(nrow, ncolumn) : null;
 
             return swapped != null;
         }

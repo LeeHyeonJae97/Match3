@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class ItemBehaviour : MonoBehaviour
 {
-    public Item Data => _data;
+    public Item Data => _item;
 
-    private Item _data;
+    private Item _item;
     private BoardBehaviour _boardBehaviour;
     private Board _board;
     private BoardLayout _boardLayout;
@@ -18,58 +18,14 @@ public class ItemBehaviour : MonoBehaviour
         _sr = GetComponentInChildren<SpriteRenderer>();
     }
 
-    public void Swap(Vector2Int direction)
+    public void OnSwapped(Vector2Int direction)
     {
-        if (GetSwappedItem(out var swapped))
-        {
-            StartCoroutine(CoSwap());
-        }
+        _item.SwappedStrategy.OnSwapped(direction, this, _boardBehaviour, _board, _boardLayout);
+    }
 
-        // LOCAL FUNCTION
-        bool GetSwappedItem(out ItemBehaviour swapped)
-        {
-            _boardLayout.GetRowColumn(transform.position, out var row, out var column);
-
-            var nrow = row + direction.y;
-            var ncolumn = column + direction.x;
-
-            swapped = _boardLayout.IsValid(nrow, ncolumn) ? _board.GetItemBehaviour(nrow, ncolumn) : null;
-
-            return swapped != null;
-        }
-
-        // LOCAL FUNCTION
-        IEnumerator CoSwap()
-        {
-            Coroutine[] cors =
-            {
-                StartCoroutine(CoMove(swapped.transform.position)),
-                StartCoroutine(swapped.CoMove(transform.position))
-            };
-
-            foreach (var cor in cors)
-            {
-                yield return cor;
-            }
-
-            _board.GetSlot(transform.position).Refreshed = true;
-            _board.GetSlot(swapped.transform.position).Refreshed = true;
-
-            if (!_boardBehaviour.Matchable())
-            {
-                cors[0] = StartCoroutine(CoMove(swapped.transform.position));
-                cors[1] = StartCoroutine(swapped.CoMove(transform.position));
-
-                foreach (var cor in cors)
-                {
-                    yield return cor;
-                }
-            }
-            else
-            {
-                _boardBehaviour.Match();
-            }
-        }
+    public void OnRemoved(List<ItemBehaviour> matched)
+    {
+        _item.RemovedStrategy.OnRemoved(matched, this);
     }
 
     public IEnumerator CoDrop(int count)
@@ -125,7 +81,7 @@ public class ItemBehaviour : MonoBehaviour
 
     public void Initialize(Item item)
     {
-        _data = item;
+        _item = item;
 
         _sr.sprite = item.Sprite;
     }
