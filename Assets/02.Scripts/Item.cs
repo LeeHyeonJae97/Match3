@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ItemType { Candy }
+public enum ItemType { Candy, HSCandy, VSCandy }
 public enum ItemColor { Blue, Green, Red, Yellow, White, Black, Gray, None = -1 }
 
 [CreateAssetMenu(fileName = "Item", menuName = "ScriptableObject/Board/Item/Item")]
@@ -14,12 +14,14 @@ public class Item : ScriptableObject
     public Sprite Sprite => _sprite;
     public ItemSwappedStrategy SwappedStrategy => _swappedStrategy;
     public ItemRemovedStrategy RemovedStrategy => _removedStrategy;
+    public ItemRemovedStrategy SubRemovedStrategy => _subRemovedStrategy;
 
     [SerializeField] private ItemType _type;
     [SerializeField] private ItemColor _color;
     [SerializeField] private Sprite _sprite;
     [SerializeField] private ItemSwappedStrategy _swappedStrategy;
     [SerializeField] private ItemRemovedStrategy _removedStrategy;
+    [SerializeField] private ItemRemovedStrategy _subRemovedStrategy;
 
     public bool IsSame(Item item)
     {

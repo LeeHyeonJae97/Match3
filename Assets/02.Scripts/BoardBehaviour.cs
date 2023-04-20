@@ -64,7 +64,7 @@ public class BoardBehaviour : MonoBehaviour
                 {
                     var current = _board.GetItemBehaviour(r, c);
 
-                    var same = item != null && current != null && current.Data.IsSame(item.Data);
+                    var same = item != null && current != null && current.IsSame(item);
 
                     if (same)
                     {
@@ -97,7 +97,7 @@ public class BoardBehaviour : MonoBehaviour
                 {
                     var current = _board.GetItemBehaviour(r, c);
 
-                    var same = item != null && current != null && current.Data.IsSame(item.Data);
+                    var same = item != null && current != null && current.IsSame(item);
 
                     if (same)
                     {
@@ -186,14 +186,14 @@ public class BoardBehaviour : MonoBehaviour
 
                 var slot = _board.GetSlot(row, column);
 
-                if (slot.MatchGroup == matchGroup || (slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3)
+                if (NeedSpecialItem(slot))
                 {
                     if (slot.Refreshed && slot.MatchGroup != matchGroup)
                     {
                         pivot = item;
                         matchGroup = slot.MatchGroup;
 
-                        item.Initialize(_board.GetItem());
+                        item.Initialize(_board.GetItem(GetSpecialItemType(slot)));
                     }
                     else
                     {
@@ -213,13 +213,48 @@ public class BoardBehaviour : MonoBehaviour
 
                     item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column); ;
 
-                    item.Initialize(_board.GetItem());
+                    item.Initialize(_board.GetItem(ItemType.Candy));
                 }
             }
 
             foreach (var cor in cors)
             {
                 yield return cor;
+            }
+
+            // LOCAL FUNCTIOn
+            bool NeedSpecialItem(Slot slot)
+            {
+                return (slot.MatchGroup != 0 && slot.MatchGroup == matchGroup) || (slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3;
+            }
+
+            // LOCAL FUNCTION
+            ItemType GetSpecialItemType(Slot slot)
+            {
+                if (slot.RowScore >= 3 && slot.ColumnScore >= 3)
+                {
+                    return ItemType.Candy;
+                }
+                else if (slot.RowScore == 4)
+                {
+                    return ItemType.VSCandy;
+                }
+                else if (slot.RowScore == 5)
+                {
+                    return ItemType.Candy;
+                }
+                else if (slot.ColumnScore == 4)
+                {
+                    return ItemType.HSCandy;
+                }
+                else if (slot.ColumnScore == 5)
+                {
+                    return ItemType.Candy;
+                }
+                else
+                {
+                    return ItemType.Candy;
+                }
             }
 
             // LOCAL FUNCTION
@@ -229,7 +264,7 @@ public class BoardBehaviour : MonoBehaviour
 
                 item.transform.position = refill;
 
-                item.Initialize(_board.GetItem());
+                item.Initialize(_board.GetItem(ItemType.Candy));
             }
         }
 
@@ -290,7 +325,7 @@ public class BoardBehaviour : MonoBehaviour
                     item.transform.position = new Vector2(minX + c * width, minY + r * height);
                     item.transform.localScale = Vector2.one * size;
 
-                    item.Initialize(this, _board, _boardLayout, _board.GetItem());
+                    item.Initialize(this, _board, _boardLayout, _board.GetItem(ItemType.Candy));
 
                     _board.Add(item);
                 }
@@ -304,7 +339,7 @@ public class BoardBehaviour : MonoBehaviour
             {
                 for (int i = 0; i < _matched.Count; i++)
                 {
-                    _matched[i].Initialize(_board.GetItem());
+                    _matched[i].Initialize(_board.GetItem(ItemType.Candy));
                 }
 
                 _matched.Clear();
@@ -339,7 +374,7 @@ public class BoardBehaviour : MonoBehaviour
                     // to prevent dropping items are matched
                     if (current == null) return;
 
-                    var same = item != null && current != null && current.Data.IsSame(item.Data);
+                    var same = item != null && current != null && current.IsSame(item);
 
                     if (same)
                     {
@@ -417,7 +452,7 @@ public class BoardBehaviour : MonoBehaviour
                     // to prevent dropping items are matched
                     if (current == null) return;
 
-                    var same = item != null && current != null && current.Data.IsSame(item.Data);
+                    var same = item != null && current != null && current.IsSame(item);
 
                     if (same)
                     {

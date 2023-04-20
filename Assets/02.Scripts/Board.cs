@@ -6,13 +6,11 @@ using UnityEngine.Assertions;
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
 public class Board : ScriptableObject
 {
-    public List<ItemBehaviour> ItemBehaviours => _itemBehaviours;
-
-    [SerializeField] private int[] _data;
     [SerializeField] private BoardLayout _layout;
     [SerializeField] private List<Item> _items;
     private List<ItemBehaviour> _itemBehaviours;
     private Slot[,] _slots;
+    private int[] _data;
 
     public void Initialize()
     {
@@ -31,6 +29,8 @@ public class Board : ScriptableObject
 
     public void Add(ItemBehaviour item)
     {
+        Assert.IsTrue(_itemBehaviours.Count <= _layout.Row * _layout.Column);
+
         _itemBehaviours.Add(item);
     }
 
@@ -42,6 +42,18 @@ public class Board : ScriptableObject
     public ItemBehaviour GetItemBehaviour(int row, int column)
     {
         return GetItemBehaviour(_layout.GetPosition(row, column));
+    }
+
+    public Item GetItem(int id)
+    {
+        return _items.Find((item) => item.Id == id);
+    }
+
+    public Item GetItem(ItemType type)
+    {
+        var item = _items.FindAll((item) => item.Type == type);
+
+        return item[Random.Range(0, item.Count)];
     }
 
     public Slot GetSlot(Vector3 position)
@@ -62,16 +74,6 @@ public class Board : ScriptableObject
         {
             slot.Reset();
         }
-    }
-
-    public Item GetItem(int id)
-    {
-        return _items.Find((item) => item.Id == id);
-    }
-
-    public Item GetItem()
-    {
-        return _items[Random.Range(0, _items.Count)];
     }
 
     public void Load()

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = NAME, menuName = PATH + NAME)]
-public class Swap : ItemSwappedStrategy
+public class SwapStrategy : ItemSwappedStrategy
 {
-    protected const string NAME = nameof(Swap);
+    protected const string NAME = nameof(SwapStrategy);
 
     public override void OnSwapped(Vector2Int direction, ItemBehaviour item, BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout)
     {

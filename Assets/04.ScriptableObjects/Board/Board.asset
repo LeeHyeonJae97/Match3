@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66b4ddeaab2c98e47a1088f882f924f9, type: 3}
   m_Name: Board
   m_EditorClassIdentifier: 
-  _data: 
   _layout: {fileID: 11400000, guid: e00887789661e5d43a1c445ac39af0be, type: 2}
   _items:
   - {fileID: 11400000, guid: 236d3afd01ca0c34699d4d52db22de40, type: 2}
   - {fileID: 11400000, guid: 317af2460761cfa4d8d30471531df4b6, type: 2}
   - {fileID: 11400000, guid: 22ced82b02a22f744ba0df162a124d3d, type: 2}
   - {fileID: 11400000, guid: 384f568548cc1b34d9da272481a5f7a7, type: 2}
+  - {fileID: 11400000, guid: e1e5168f046d42a4dbbf4e5f29b5a325, type: 2}
+  - {fileID: 11400000, guid: 3235d63ad003cf14ea9dee274d95282a, type: 2}

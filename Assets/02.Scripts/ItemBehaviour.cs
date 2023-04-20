@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class ItemBehaviour : MonoBehaviour
 {
-    public Item Data => _item;
-
     private Item _item;
     private BoardBehaviour _boardBehaviour;
     private Board _board;
@@ -18,6 +16,22 @@ public class ItemBehaviour : MonoBehaviour
         _sr = GetComponentInChildren<SpriteRenderer>();
     }
 
+    public void Initialize(BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout, Item item)
+    {
+        _boardBehaviour = boardBehaviour;
+        _board = board;
+        _boardLayout = boardLayout;
+
+        Initialize(item);
+    }
+
+    public void Initialize(Item item)
+    {
+        _item = item;
+
+        _sr.sprite = item.Sprite;
+    }
+
     public void OnSwapped(Vector2Int direction)
     {
         _item.SwappedStrategy.OnSwapped(direction, this, _boardBehaviour, _board, _boardLayout);
@@ -25,7 +39,7 @@ public class ItemBehaviour : MonoBehaviour
 
     public void OnRemoved(List<ItemBehaviour> matched)
     {
-        _item.RemovedStrategy.OnRemoved(matched, this);
+        _item.RemovedStrategy.OnRemoved(matched, _board, _boardLayout, this);
     }
 
     public IEnumerator CoDrop(int count)
@@ -70,19 +84,8 @@ public class ItemBehaviour : MonoBehaviour
         yield return transform.DOMove(position, 1 / speed).SetEase(Ease.Linear).WaitForCompletion();
     }
 
-    public void Initialize(BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout, Item item)
+    public bool IsSame(ItemBehaviour itemBehaviour)
     {
-        _boardBehaviour = boardBehaviour;
-        _board = board;
-        _boardLayout = boardLayout;
-
-        Initialize(item);
-    }
-
-    public void Initialize(Item item)
-    {
-        _item = item;
-
-        _sr.sprite = item.Sprite;
+        return _item.Color == itemBehaviour._item.Color;
     }
 }
