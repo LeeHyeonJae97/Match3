@@ -37,9 +37,9 @@ public class ItemBehaviour : MonoBehaviour
         _item.SwappedStrategy.OnSwapped(direction, this, _boardBehaviour, _board, _boardLayout);
     }
 
-    public void OnRemoved(List<ItemBehaviour> matched)
+    public void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover)
     {
-        _item.RemovedStrategy.OnRemoved(matched, _board, _boardLayout, this);
+        _item.RemovedStrategy.OnRemoved(matched, remover, _board, _boardLayout, this);
     }
 
     public IEnumerator CoDrop(int count)

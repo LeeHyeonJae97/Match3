@@ -7,13 +7,51 @@ public class RemoveColumn : ItemRemovedStrategy
 {
     protected const string NAME = nameof(RemoveColumn);
 
-    public override void OnRemoved(List<ItemBehaviour> matched, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
     {
-        var column = boardLayout.GetColumn(itemBehaviour.transform.position);
+        if (matched.Contains(itemBehaviour)) return;
 
-        for (int row = 0; row < boardLayout.Row; row++)
+        matched.Add(itemBehaviour);
+
+        if (remover == null)
         {
-            matched.Add(board.GetItemBehaviour(row, column));
+            RemoveColumn(boardLayout.GetColumn(itemBehaviour));
+        }
+        else
+        {
+            boardLayout.GetRowColumn(remover, out var removerRow, out var removerColumn);
+            boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+
+            if (removerColumn == column)
+            {
+                RemoveRow(row);
+            }
+            else
+            {
+                RemoveColumn(column);
+            }
+        }
+
+        // LOCAL FUNCTION
+        void RemoveRow(int row)
+        {
+            for (int c = 0; c < boardLayout.Column; c++)
+            {
+                var removed = board.GetItemBehaviour(row, c);
+
+                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+            }
+        }
+
+        // LOCAL FUNCTION
+        void RemoveColumn(int column)
+        {
+            for (int r = 0; r < boardLayout.Row; r++)
+            {
+                var removed = board.GetItemBehaviour(r, column);
+
+                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+            }
         }
     }
 }

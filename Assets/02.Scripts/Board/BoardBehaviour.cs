@@ -150,147 +150,6 @@ public class BoardBehaviour : MonoBehaviour
             }
             Reset();
         }
-
-        // LOCAL FUNCTION
-        IEnumerator CoRefill(List<ItemBehaviour> matched)
-        {
-            matched = matched.Distinct().ToList();
-
-            matched.Sort((l, r) =>
-            {
-                _boardLayout.GetRowColumn(l.transform.position, out var lr, out var lc);
-                _boardLayout.GetRowColumn(r.transform.position, out var rr, out var rc);
-
-                var ls = _board.GetSlot(lr, lc);
-                var rs = _board.GetSlot(rr, rc);
-
-                var comp = ls.MatchGroup.CompareTo(rs.MatchGroup);
-
-                if (comp == 0)
-                {
-                    comp = ls.Refreshed ? -1 : 1;
-                }
-
-                return comp;
-            });
-
-            var pivot = default(ItemBehaviour);
-            var matchGroup = 0;
-
-            var cors = new List<Coroutine>();
-
-            var counts = new int[_boardLayout.Column];
-
-            foreach (var item in matched)
-            {
-                _boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
-
-                var slot = _board.GetSlot(row, column);
-
-                if (NeedSpecialItem(slot))
-                {
-                    if (slot.Refreshed && slot.MatchGroup != matchGroup)
-                    {
-                        pivot = item;
-                        matchGroup = slot.MatchGroup;
-
-                        item.Initialize(_board.GetItem(GetSpecialItemType(slot)));
-                    }
-                    else
-                    {
-                        counts[column]++;
-
-                        var pivotPosition = pivot.transform.position;
-                        var refillPosition = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column);
-
-                        var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
-
-                        cors.Add(cor);
-                    }
-                }
-                else
-                {
-                    counts[column]++;
-
-                    item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column); ;
-
-                    item.Initialize(_board.GetItem(ItemType.Candy));
-                }
-            }
-
-            foreach (var cor in cors)
-            {
-                yield return cor;
-            }
-
-            // LOCAL FUNCTIOn
-            bool NeedSpecialItem(Slot slot)
-            {
-                return (slot.MatchGroup != 0 && slot.MatchGroup == matchGroup) || (slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3;
-            }
-
-            // LOCAL FUNCTION
-            ItemType GetSpecialItemType(Slot slot)
-            {
-                if (slot.RowScore >= 3 && slot.ColumnScore >= 3)
-                {
-                    return ItemType.Candy;
-                }
-                else if (slot.RowScore == 4)
-                {
-                    return ItemType.VSCandy;
-                }
-                else if (slot.RowScore == 5)
-                {
-                    return ItemType.Candy;
-                }
-                else if (slot.ColumnScore == 4)
-                {
-                    return ItemType.HSCandy;
-                }
-                else if (slot.ColumnScore == 5)
-                {
-                    return ItemType.Candy;
-                }
-                else
-                {
-                    return ItemType.Candy;
-                }
-            }
-
-            // LOCAL FUNCTION
-            IEnumerator CoMove(ItemBehaviour item, Vector3 pivot, Vector3 refill)
-            {
-                yield return StartCoroutine(item.CoMove(pivot, 5));
-
-                item.transform.position = refill;
-
-                item.Initialize(_board.GetItem(ItemType.Candy));
-            }
-        }
-
-        // LOCAL FUNCTION
-        void Drop()
-        {
-            for (int c = 0; c < _boardLayout.Column; c++)
-            {
-                int count = 0;
-
-                for (int r = 0; r < _boardLayout.Row + count; r++)
-                {
-                    var item = _board.GetItemBehaviour(r, c);
-
-                    if (item == null)
-                    {
-                        count++;
-                    }
-                    else if (count > 0)
-                    {
-                        StartCoroutine(item.CoDrop(count));
-                    }
-                }
-            }
-        }
     }
 
     private void Initialize()
@@ -442,8 +301,7 @@ public class BoardBehaviour : MonoBehaviour
                     slot.RowScore = Mathf.Max(slot.RowScore, score);
                     slot.MatchGroup = matchGroup;
 
-                    var removed = _board.GetItemBehaviour(r, c - i);
-                    removed.OnRemoved(matched);
+                    _board.GetItemBehaviour(r, c - i).OnRemoved(matched, null);
                 }
             }
         }
@@ -520,8 +378,144 @@ public class BoardBehaviour : MonoBehaviour
                     slot.ColumnScore = Mathf.Max(slot.ColumnScore, score);
                     slot.MatchGroup = matchGroup;
 
-                    var removed = _board.GetItemBehaviour(r - i, c);
-                    removed.OnRemoved(matched);
+                    _board.GetItemBehaviour(r - i, c).OnRemoved(matched, null);
+                }
+            }
+        }
+    }
+
+    private IEnumerator CoRefill(List<ItemBehaviour> matched)
+    {
+        matched.Sort((l, r) =>
+        {
+            _boardLayout.GetRowColumn(l.transform.position, out var lr, out var lc);
+            _boardLayout.GetRowColumn(r.transform.position, out var rr, out var rc);
+
+            var ls = _board.GetSlot(lr, lc);
+            var rs = _board.GetSlot(rr, rc);
+
+            var comp = ls.MatchGroup.CompareTo(rs.MatchGroup);
+
+            if (comp == 0)
+            {
+                comp = ls.Refreshed ? -1 : 1;
+            }
+
+            return comp;
+        });
+
+        var pivot = default(ItemBehaviour);
+        var matchGroup = 0;
+
+        var cors = new List<Coroutine>();
+
+        var counts = new int[_boardLayout.Column];
+
+        foreach (var item in matched)
+        {
+            _boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
+
+            var slot = _board.GetSlot(row, column);
+
+            if (NeedSpecialItem(slot))
+            {
+                if (slot.Refreshed && slot.MatchGroup != matchGroup)
+                {
+                    pivot = item;
+                    matchGroup = slot.MatchGroup;
+
+                    item.Initialize(_board.GetItem(GetSpecialItemType(slot)));
+                }
+                else
+                {
+                    counts[column]++;
+
+                    var pivotPosition = pivot.transform.position;
+                    var refillPosition = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column);
+
+                    var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
+
+                    cors.Add(cor);
+                }
+            }
+            else
+            {
+                counts[column]++;
+
+                item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column); ;
+
+                item.Initialize(_board.GetItem(ItemType.Candy));
+            }
+        }
+
+        foreach (var cor in cors)
+        {
+            yield return cor;
+        }
+
+        // LOCAL FUNCTIOn
+        bool NeedSpecialItem(Slot slot)
+        {
+            return (slot.MatchGroup != 0 && slot.MatchGroup == matchGroup) || (slot.RowScore >= 3 && slot.ColumnScore >= 3) || slot.RowScore > 3 || slot.ColumnScore > 3;
+        }
+
+        // LOCAL FUNCTION
+        ItemType GetSpecialItemType(Slot slot)
+        {
+            if (slot.RowScore >= 3 && slot.ColumnScore >= 3)
+            {
+                return ItemType.Candy;
+            }
+            else if (slot.RowScore == 4)
+            {
+                return ItemType.VSCandy;
+            }
+            else if (slot.RowScore == 5)
+            {
+                return ItemType.Candy;
+            }
+            else if (slot.ColumnScore == 4)
+            {
+                return ItemType.HSCandy;
+            }
+            else if (slot.ColumnScore == 5)
+            {
+                return ItemType.Candy;
+            }
+            else
+            {
+                return ItemType.Candy;
+            }
+        }
+
+        // LOCAL FUNCTION
+        IEnumerator CoMove(ItemBehaviour item, Vector3 pivot, Vector3 refill)
+        {
+            yield return StartCoroutine(item.CoMove(pivot, 5));
+
+            item.transform.position = refill;
+
+            item.Initialize(_board.GetItem(ItemType.Candy));
+        }
+    }
+
+    private void Drop()
+    {
+        for (int c = 0; c < _boardLayout.Column; c++)
+        {
+            int count = 0;
+
+            for (int r = 0; r < _boardLayout.Row + count; r++)
+            {
+                var item = _board.GetItemBehaviour(r, c);
+
+                if (item == null)
+                {
+                    count++;
+                }
+                else if (count > 0)
+                {
+                    StartCoroutine(item.CoDrop(count));
                 }
             }
         }

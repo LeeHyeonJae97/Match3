@@ -7,13 +7,51 @@ public class RemoveRow : ItemRemovedStrategy
 {
     protected const string NAME = nameof(RemoveRow);
 
-    public override void OnRemoved(List<ItemBehaviour> matched, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
     {
-        var row = boardLayout.GetRow(itemBehaviour.transform.position);
+        if (matched.Contains(itemBehaviour)) return;
 
-        for (int column = 0; column < boardLayout.Column; column++)
+        matched.Add(itemBehaviour);
+
+        if (remover == null)
         {
-            matched.Add(board.GetItemBehaviour(row, column));
+            RemoveRow(boardLayout.GetRow(itemBehaviour));
+        }
+        else
+        {
+            boardLayout.GetRowColumn(remover, out var removerRow, out var removerColumn);
+            boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+
+            if (removerRow == row)
+            {
+                RemoveColumn(column);
+            }
+            else
+            {
+                RemoveRow(row);
+            }
+        }
+
+        // LOCAL FUNCTION
+        void RemoveRow(int row)
+        {
+            for (int c = 0; c < boardLayout.Column; c++)
+            {
+                var removed = board.GetItemBehaviour(row, c);
+
+                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+            }
+        }
+
+        // LOCAL FUNCTION
+        void RemoveColumn(int column)
+        {
+            for (int r = 0; r < boardLayout.Row; r++)
+            {
+                var removed = board.GetItemBehaviour(r, column);
+
+                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+            }
         }
     }
 }

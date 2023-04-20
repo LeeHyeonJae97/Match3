@@ -7,8 +7,10 @@ public class RemoveSelf : ItemRemovedStrategy
 {
     protected const string NAME = nameof(RemoveSelf);
 
-    public override void OnRemoved(List<ItemBehaviour> matched, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
     {
+        if (matched.Contains(itemBehaviour)) return;
+
         matched.Add(itemBehaviour);
     }
 }
