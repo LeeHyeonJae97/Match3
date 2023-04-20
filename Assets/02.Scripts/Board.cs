@@ -12,9 +12,12 @@ public class Board : ScriptableObject
     private Slot[,] _slots;
     private int[] _data;
 
-    public void Initialize()
+    public void Initialize(List<ItemBehaviour> itemBehaviours)
     {
-        _itemBehaviours = new List<ItemBehaviour>();
+        Assert.IsNotNull(itemBehaviours);
+        Assert.AreEqual(itemBehaviours.Count, _layout.Row * _layout.Column);
+
+        _itemBehaviours = itemBehaviours;
 
         _slots = new Slot[_layout.Row, _layout.Column];
 
@@ -25,13 +28,6 @@ public class Board : ScriptableObject
                 _slots[row, column] = new Slot();
             }
         }
-    }
-
-    public void Add(ItemBehaviour item)
-    {
-        Assert.IsTrue(_itemBehaviours.Count <= _layout.Row * _layout.Column);
-
-        _itemBehaviours.Add(item);
     }
 
     public ItemBehaviour GetItemBehaviour(Vector3 position)

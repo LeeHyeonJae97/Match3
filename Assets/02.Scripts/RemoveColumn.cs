@@ -9,11 +9,11 @@ public class RemoveColumn : ItemRemovedStrategy
 
     public override void OnRemoved(List<ItemBehaviour> matched, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
     {
-        var col = boardLayout.GetColumn(itemBehaviour.transform.position);
+        var column = boardLayout.GetColumn(itemBehaviour.transform.position);
 
         for (int row = 0; row < boardLayout.Row; row++)
         {
-            matched.Add(board.GetItemBehaviour(row, col));
+            matched.Add(board.GetItemBehaviour(row, column));
         }
     }
 }

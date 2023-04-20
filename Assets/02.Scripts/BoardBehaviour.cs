@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class BoardBehaviour : MonoBehaviour
 {
@@ -294,18 +295,22 @@ public class BoardBehaviour : MonoBehaviour
 
     private void Initialize()
     {
-        _board.Initialize();
-
-        _matched = new List<ItemBehaviour>();
-
+        Validate();
         Instantiate();
         Shuffle();
 
         // LOCAL FUNCTION
+        void Validate()
+        {
+            Assert.IsNotNull(_itemPrefab);
+            Assert.IsNotNull(_board);
+            Assert.IsNotNull(_boardLayout);
+            Assert.IsNotNull(_inputManager);
+        }
+
+        // LOCAL FUNCTION
         void Instantiate()
         {
-            if (_itemPrefab == null || _boardLayout == null) return;
-
             var row = _boardLayout.Row;
             var column = _boardLayout.Column;
             var size = _boardLayout.Size;
@@ -315,6 +320,8 @@ public class BoardBehaviour : MonoBehaviour
             var height = size + spacing;
             var minX = column / 2 * width * -1 + (column % 2 == 0 ? width / 2 : 0);
             var minY = row / 2 * height * -1 + (row % 2 == 0 ? height / 2 : 0);
+
+            var itemBehaviours = new List<ItemBehaviour>();
 
             for (int r = 0; r < row; r++)
             {
@@ -327,14 +334,18 @@ public class BoardBehaviour : MonoBehaviour
 
                     item.Initialize(this, _board, _boardLayout, _board.GetItem(ItemType.Candy));
 
-                    _board.Add(item);
+                    itemBehaviours.Add(item);
                 }
             }
+
+            _board.Initialize(itemBehaviours);
         }
 
         // LOCAL FUNCTION
         void Shuffle()
         {
+            _matched = new List<ItemBehaviour>();
+
             do
             {
                 for (int i = 0; i < _matched.Count; i++)

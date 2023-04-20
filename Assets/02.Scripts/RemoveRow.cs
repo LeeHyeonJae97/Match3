@@ -11,9 +11,9 @@ public class RemoveRow : ItemRemovedStrategy
     {
         var row = boardLayout.GetRow(itemBehaviour.transform.position);
 
-        for (int col = 0; col < boardLayout.Column; col++)
+        for (int column = 0; column < boardLayout.Column; column++)
         {
-            matched.Add(board.GetItemBehaviour(row, col));
+            matched.Add(board.GetItemBehaviour(row, column));
         }
     }
 }
