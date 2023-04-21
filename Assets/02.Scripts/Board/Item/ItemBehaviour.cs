@@ -55,7 +55,7 @@ public class ItemBehaviour : MonoBehaviour
         {
             for (int i = 0; i < count; i++)
             {
-                _boardLayout.GetRowColumn(transform.position, out var row, out var column);
+                _boardLayout.GetRowColumn(this, out var row, out var column);
 
                 yield return StartCoroutine(CoMove(_boardLayout.GetPosition(row - 1, column)));
             }

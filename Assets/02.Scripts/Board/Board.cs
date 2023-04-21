@@ -125,7 +125,7 @@ public class Board : ScriptableObject
             {
                 if (item != null)
                 {
-                    _layout.GetRowColumn(item.transform.position, out var row, out var column);
+                    _layout.GetRowColumn(item, out var row, out var column);
 
                     var position = item.transform.position - new Vector3(item.transform.localScale.x / 2, 0, 0);
 

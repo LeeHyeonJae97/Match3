@@ -17,7 +17,7 @@ public class SwapStrategy : ItemSwappedStrategy
         // LOCAL FUNCTION
         bool GetSwappedItem(out ItemBehaviour swapped)
         {
-            boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
+            boardLayout.GetRowColumn(item, out var row, out var column);
 
             var nrow = row + direction.y;
             var ncolumn = column + direction.x;

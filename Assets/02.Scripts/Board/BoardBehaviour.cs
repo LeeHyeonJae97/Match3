@@ -386,8 +386,8 @@ public class BoardBehaviour : MonoBehaviour
     {
         matched.Sort((l, r) =>
         {
-            _boardLayout.GetRowColumn(l.transform.position, out var lr, out var lc);
-            _boardLayout.GetRowColumn(r.transform.position, out var rr, out var rc);
+            _boardLayout.GetRowColumn(l, out var lr, out var lc);
+            _boardLayout.GetRowColumn(r, out var rr, out var rc);
 
             var ls = _board.GetSlot(lr, lc);
             var rs = _board.GetSlot(rr, rc);
@@ -412,7 +412,7 @@ public class BoardBehaviour : MonoBehaviour
 
         foreach (var item in matched)
         {
-            _boardLayout.GetRowColumn(item.transform.position, out var row, out var column);
+            _boardLayout.GetRowColumn(item, out var row, out var column);
 
             var slot = _board.GetSlot(row, column);
 
