@@ -148,7 +148,6 @@ public class BoardBehaviour : MonoBehaviour
                 CoRefill(_matched);
                 Drop();
             }
-            yield return null;
             Reset();
         }
     }
@@ -156,7 +155,7 @@ public class BoardBehaviour : MonoBehaviour
     private void Initialize()
     {
         Validate();
-        Instantiate();
+        Initialize();
         Shuffle();
 
         // LOCAL FUNCTION
@@ -169,8 +168,10 @@ public class BoardBehaviour : MonoBehaviour
         }
 
         // LOCAL FUNCTION
-        void Instantiate()
+        void Initialize()
         {
+            _matched = new List<ItemBehaviour>();
+
             var row = _boardLayout.Row;
             var column = _boardLayout.Column;
             var size = _boardLayout.Size;
@@ -204,8 +205,6 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         void Shuffle()
         {
-            _matched = new List<ItemBehaviour>();
-
             do
             {
                 for (int i = 0; i < _matched.Count; i++)
@@ -227,82 +226,15 @@ public class BoardBehaviour : MonoBehaviour
     {
         var matchGroup = 0;
 
-        MatchRow();
-        MatchColumn();
+        var skip = new int[_boardLayout.Column];
 
-        // LOCAL FUNCTION
-        void MatchRow()
+        for (int i = 0; i < skip.Length; i++)
         {
-            for (int r = 0; r < _boardLayout.Row; r++)
-            {
-                var item = default(ItemBehaviour);
-                var score = 1;
-
-                for (int c = 0; c < _boardLayout.Column; c++)
-                {
-                    var current = _board.GetItemBehaviour(r, c);
-
-                    var same = item != null && current != null && current.IsSame(item);
-
-                    if (same)
-                    {
-                        score++;
-
-                        var match = c == _boardLayout.Column - 1 && score >= 3;
-
-                        if (match)
-                        {
-                            Update(r, c, 0, score, score, GetMatchGrouop(r, c, score));
-                        }
-                    }
-                    else
-                    {
-                        var match = score >= 3;
-
-                        if (match)
-                        {
-                            Update(r, c, 1, score + 1, score, GetMatchGrouop(r, c, score));
-                        }
-
-                        item = current;
-                        score = 1;
-                    }
-                }
-            }
-
-            // LOCAL FUNCTION
-            int GetMatchGrouop(int r, int c, int score)
-            {
-                var mg = 0;
-
-                for (int i = 0; i < score; i++)
-                {
-                    var tmp = _board.GetSlot(r, c - i).MatchGroup;
-
-                    if (tmp > 0)
-                    {
-                        mg = tmp;
-                    }
-                }
-                if (mg == 0) mg = ++matchGroup;
-
-                return mg;
-            }
-
-            // LOCAL FUNCTION
-            void Update(int r, int c, int min, int max, int score, int matchGroup)
-            {
-                for (int i = min; i < max; i++)
-                {
-                    var slot = _board.GetSlot(r, c - i);
-
-                    slot.RowScore = Mathf.Max(slot.RowScore, score);
-                    slot.MatchGroup = matchGroup;
-
-                    _board.GetItemBehaviour(r, c - i).OnRemoved(matched, null);
-                }
-            }
+            skip[i] = _boardLayout.Row;
         }
+
+        MatchColumn();
+        MatchRow();
 
         // LOCAL FUNCTION
         void MatchColumn()
@@ -317,7 +249,11 @@ public class BoardBehaviour : MonoBehaviour
                     var current = _board.GetItemBehaviour(r, c);
 
                     // to prevent dropping items are matched
-                    if (current == null) break;
+                    if (current == null)
+                    {
+                        skip[c] = r;
+                        break;
+                    }
 
                     var same = item != null && current != null && current.IsSame(item);
 
@@ -380,6 +316,80 @@ public class BoardBehaviour : MonoBehaviour
                 }
             }
         }
+
+        // LOCAL FUNCTION
+        void MatchRow()
+        {
+            for (int r = 0; r < _boardLayout.Row; r++)
+            {
+                var item = default(ItemBehaviour);
+                var score = 1;
+
+                for (int c = 0; c < _boardLayout.Column; c++)
+                {
+                    var current = r < skip[c] ? _board.GetItemBehaviour(r, c) : null;
+
+                    var same = item != null && current != null && current.IsSame(item);
+
+                    if (same)
+                    {
+                        score++;
+
+                        var match = c == _boardLayout.Column - 1 && score >= 3;
+
+                        if (match)
+                        {
+                            Update(r, c, 0, score, score, GetMatchGrouop(r, c, score));
+                        }
+                    }
+                    else
+                    {
+                        var match = score >= 3;
+
+                        if (match)
+                        {
+                            Update(r, c, 1, score + 1, score, GetMatchGrouop(r, c, score));
+                        }
+
+                        item = current;
+                        score = 1;
+                    }
+                }
+            }
+
+            // LOCAL FUNCTION
+            int GetMatchGrouop(int r, int c, int score)
+            {
+                var mg = 0;
+
+                for (int i = 0; i < score; i++)
+                {
+                    var tmp = _board.GetSlot(r, c - i).MatchGroup;
+
+                    if (tmp > 0)
+                    {
+                        mg = tmp;
+                    }
+                }
+                if (mg == 0) mg = ++matchGroup;
+
+                return mg;
+            }
+
+            // LOCAL FUNCTION
+            void Update(int r, int c, int min, int max, int score, int matchGroup)
+            {
+                for (int i = min; i < max; i++)
+                {
+                    var slot = _board.GetSlot(r, c - i);
+
+                    slot.RowScore = Mathf.Max(slot.RowScore, score);
+                    slot.MatchGroup = matchGroup;
+
+                    _board.GetItemBehaviour(r, c - i).OnRemoved(matched, null);
+                }
+            }
+        }
     }
 
     private void CoRefill(List<ItemBehaviour> matched)
@@ -409,6 +419,14 @@ public class BoardBehaviour : MonoBehaviour
         var cors = new List<Coroutine>();
 
         var counts = new int[_boardLayout.Column];
+
+        for (int column = 0; column < _boardLayout.Column; column++)
+        {
+            for (int row = 0; row < _boardLayout.Row; row++)
+            {
+                if (_board.GetItemBehaviour(row, column) == null) counts[column]++;
+            }
+        }
 
         foreach (var item in matched)
         {
@@ -477,7 +495,7 @@ public class BoardBehaviour : MonoBehaviour
             }
             else if (slot.RowScore == 5)
             {
-                return ItemType.Candy;
+                return ItemType.VSCandy;
             }
             else if (slot.ColumnScore == 4)
             {
@@ -485,7 +503,7 @@ public class BoardBehaviour : MonoBehaviour
             }
             else if (slot.ColumnScore == 5)
             {
-                return ItemType.Candy;
+                return ItemType.HSCandy;
             }
             else
             {
@@ -514,13 +532,13 @@ public class BoardBehaviour : MonoBehaviour
             {
                 var item = _board.GetItemBehaviour(r, c);
 
-                if (item == null)
+                if (item == null && r < _boardLayout.Row)
                 {
                     count++;
                 }
-                else if (count > 0)
+                else if (item != null && (count > 0 || (_board.TryGetSlot(item, out var slot) && slot.Refreshed)))
                 {
-                    StartCoroutine(item.CoDrop(count));
+                    item.Drop(count);
                 }
             }
         }

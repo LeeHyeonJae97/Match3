@@ -44,42 +44,50 @@ public class ItemBehaviour : MonoBehaviour
         _item.RemovedStrategy.OnRemoved(matched, remover, _board, _boardLayout, this);
     }
 
-    public IEnumerator CoDrop(int count)
+    public void Drop(int count)
     {
-        yield return StartCoroutine(CoDrop());
-        SetRefreshed();
-        Match();
+        StopAllCoroutines();
+        StartCoroutine(CoDrop());
 
-        // LOCAL FUNTION
         IEnumerator CoDrop()
         {
-            for (int i = 0; i < count; i++)
+            yield return count > 0 ? StartCoroutine(CoDrop()) : null;
+            SetRefreshed();
+            Match();
+
+            // LOCAL FUNTION
+            IEnumerator CoDrop()
             {
-                _boardLayout.GetRowColumn(this, out var row, out var column);
+                for (int i = 0; i < count; i++)
+                {
+                    _boardLayout.GetRowColumn(this, out var row, out var column);
 
-                yield return StartCoroutine(CoMove(_boardLayout.GetPosition(row - 1, column)));
+                    yield return StartCoroutine(CoMove(_boardLayout.GetPosition(row - 1, column)));
+                }
             }
-        }
 
-        // LOCAL FUNCTION
-        void SetRefreshed()
-        {
-            if (_board.TryGetSlot(this, out var slot))
+            // LOCAL FUNCTION
+            void SetRefreshed()
             {
-                slot.Refreshed = true;
+                if (_board.TryGetSlot(this, out var slot))
+                {
+                    slot.Refreshed = true;
+                }
             }
-        }
 
-        // LOCAL FUNCTION
-        void Match()
-        {
-            _boardBehaviour.Match();
+            // LOCAL FUNCTION
+            void Match()
+            {
+                _boardBehaviour.Match();
+            }
         }
     }
 
     public IEnumerator CoMove(Vector2 position)
     {
-        yield return StartCoroutine(CoMove(position, 2.5f));
+        transform.DOKill(false);
+
+        yield return transform.DOMove(position, .25f).SetEase(Ease.Linear).WaitForCompletion();
     }
 
     public IEnumerator CoMove(Vector2 position, float speed)

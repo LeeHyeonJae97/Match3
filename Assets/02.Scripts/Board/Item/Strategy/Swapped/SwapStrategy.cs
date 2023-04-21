@@ -30,10 +30,13 @@ public class SwapStrategy : ItemSwappedStrategy
         // LOCAL FUNCTION
         IEnumerator CoSwap()
         {
+            var itemPos = item.transform.position;
+            var swappedPos = swapped.transform.position;
+
             Coroutine[] cors =
             {
-               item. StartCoroutine(item.CoMove(swapped.transform.position)),
-                item.StartCoroutine(swapped.CoMove(item.transform.position))
+                item.StartCoroutine(item.CoMove(swappedPos)),
+                item.StartCoroutine(swapped.CoMove(itemPos))
             };
 
             foreach (var cor in cors)
@@ -43,8 +46,8 @@ public class SwapStrategy : ItemSwappedStrategy
 
             if (!boardBehaviour.Matchable())
             {
-                cors[0] = item.StartCoroutine(item.CoMove(swapped.transform.position));
-                cors[1] = item.StartCoroutine(swapped.CoMove(item.transform.position));
+                cors[0] = item.StartCoroutine(item.CoMove(itemPos));
+                cors[1] = item.StartCoroutine(swapped.CoMove(swappedPos));
 
                 foreach (var cor in cors)
                 {

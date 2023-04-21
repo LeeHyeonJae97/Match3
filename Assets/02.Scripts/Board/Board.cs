@@ -8,9 +8,9 @@ public class Board : ScriptableObject
 {
     [SerializeField] private BoardLayout _layout;
     [SerializeField] private List<Item> _items;
+    [SerializeField] private int[] _data;
     private List<ItemBehaviour> _itemBehaviours;
     private Slot[,] _slots;
-    private int[] _data;
 
     public void Initialize(List<ItemBehaviour> itemBehaviours)
     {
