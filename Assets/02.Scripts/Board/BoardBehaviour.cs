@@ -242,9 +242,6 @@ public class BoardBehaviour : MonoBehaviour
                 {
                     var current = _board.GetItemBehaviour(r, c);
 
-                    // to prevent dropping items are matched
-                    if (current == null) return;
-
                     var same = item != null && current != null && current.IsSame(item);
 
                     if (same)
@@ -320,7 +317,7 @@ public class BoardBehaviour : MonoBehaviour
                     var current = _board.GetItemBehaviour(r, c);
 
                     // to prevent dropping items are matched
-                    if (current == null) return;
+                    if (current == null) break;
 
                     var same = item != null && current != null && current.IsSame(item);
 
