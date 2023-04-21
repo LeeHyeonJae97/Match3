@@ -64,7 +64,7 @@ public class ItemBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         void SetRefreshed()
         {
-            if (_board.GetSlot(this, out var slot))
+            if (_board.TryGetSlot(this, out var slot))
             {
                 slot.Refreshed = true;
             }

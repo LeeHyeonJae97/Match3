@@ -52,7 +52,14 @@ public class Board : ScriptableObject
         return item[Random.Range(0, item.Count)];
     }
 
-    public bool GetSlot(ItemBehaviour itemBehaviour, out Slot slot)
+    public Slot GetSlot(ItemBehaviour itemBehaviour)
+    {
+        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
+
+        return _layout.IsValid(row, column) ? _slots[row, column] : null;
+    }
+
+    public bool TryGetSlot(ItemBehaviour itemBehaviour, out Slot slot)
     {
         _layout.GetRowColumn(itemBehaviour, out var row, out var column);
 

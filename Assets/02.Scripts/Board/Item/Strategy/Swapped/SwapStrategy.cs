@@ -41,15 +41,6 @@ public class SwapStrategy : ItemSwappedStrategy
                 yield return cor;
             }
 
-            if (board.GetSlot(item, out var slot))
-            {
-                slot.Refreshed = true;
-            }
-            if (board.GetSlot(swapped, out slot))
-            {
-                slot.Refreshed = true;
-            }
-
             if (!boardBehaviour.Matchable())
             {
                 cors[0] = item.StartCoroutine(item.CoMove(swapped.transform.position));
@@ -62,6 +53,9 @@ public class SwapStrategy : ItemSwappedStrategy
             }
             else
             {
+                board.GetSlot(item).Refreshed = true;
+                board.GetSlot(swapped).Refreshed = true;
+
                 boardBehaviour.Match();
             }
         }
