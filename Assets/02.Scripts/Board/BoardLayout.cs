@@ -32,17 +32,29 @@ public class BoardLayout : ScriptableObject
 
     public void GetRowColumn(ItemBehaviour itemBehaviour, out int row, out int column)
     {
-        GetRowColumn(itemBehaviour.transform.position, out row, out column);
+        var position = itemBehaviour.transform.position;
+
+        var width = _size + _spacing;
+        var height = _size + _spacing;
+        var minX = _column / 2 * width * -1 + (_column % 2 == 0 ? width / 2 : 0);
+        var minY = _row / 2 * height * -1 + (_row % 2 == 0 ? height / 2 : 0);
+
+        row = Mathf.RoundToInt((position.y - minY) / height);
+        column = Mathf.RoundToInt((position.x - minX) / width);
     }
 
     public int GetRow(ItemBehaviour itemBehaviour)
     {
-        return GetRow(itemBehaviour.transform.position);
+        GetRowColumn(itemBehaviour, out var row, out var column);
+
+        return row;
     }
 
     public int GetColumn(ItemBehaviour itemBehaviour)
     {
-        return GetColumn(itemBehaviour.transform.position);
+        GetRowColumn(itemBehaviour, out var row, out var column);
+
+        return column;
     }
 
     [System.Obsolete]
@@ -55,21 +67,5 @@ public class BoardLayout : ScriptableObject
 
         row = Mathf.RoundToInt((position.y - minY) / height);
         column = Mathf.RoundToInt((position.x - minX) / width);
-    }
-
-    [System.Obsolete]
-    public int GetRow(Vector3 position)
-    {
-        GetRowColumn(position, out var row, out var column);
-
-        return row;
-    }
-
-    [System.Obsolete]
-    public int GetColumn(Vector3 position)
-    {
-        GetRowColumn(position, out var row, out var column);
-
-        return column;
     }
 }

@@ -15,7 +15,7 @@ public class Board : ScriptableObject
     public void Initialize(List<ItemBehaviour> itemBehaviours)
     {
         Assert.IsNotNull(itemBehaviours);
-        Assert.AreEqual(itemBehaviours.Count, _layout.Row * _layout.Column);
+        Assert.AreEqual(_layout.Row * _layout.Column, itemBehaviours.Count);
 
         _itemBehaviours = itemBehaviours;
 
@@ -52,11 +52,15 @@ public class Board : ScriptableObject
         return item[Random.Range(0, item.Count)];
     }
 
-    public Slot GetSlot(Vector3 position)
+    public bool GetSlot(ItemBehaviour itemBehaviour, out Slot slot)
     {
-        _layout.GetRowColumn(position, out var row, out var column);
+        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
 
-        return GetSlot(row, column);
+        bool valid = _layout.IsValid(row, column);
+
+        slot = valid ? _slots[row, column] : null;
+
+        return valid;
     }
 
     public Slot GetSlot(int row, int column)
@@ -74,12 +78,25 @@ public class Board : ScriptableObject
 
     public void Load()
     {
+        Assert.AreEqual(_layout.Row * _layout.Column, _data.Length);
+        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
 
+        for (int i = 0; i < _data.Length; i++)
+        {
+            _itemBehaviours[i].Initialize(GetItem(_data[i]));
+        }
     }
 
     public void Save()
     {
+        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
 
+        _data = new int[_itemBehaviours.Count];
+
+        for (int i = 0; i < _itemBehaviours.Count; i++)
+        {
+            _data[i] = _itemBehaviours[i].Item.Id;
+        }
     }
 
     public void Shuffle()
@@ -87,7 +104,7 @@ public class Board : ScriptableObject
 
     }
 
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         DrawItems();
         DrawSlots();
@@ -95,7 +112,7 @@ public class Board : ScriptableObject
         // LOCAL FUNCTION
         void DrawItems()
         {
-            if (_itemBehaviours == null) return;
+            if (!Application.isPlaying || _itemBehaviours == null) return;
 
             foreach (var item in _itemBehaviours)
             {
@@ -113,7 +130,7 @@ public class Board : ScriptableObject
         // LOCAL FUNCTION
         void DrawSlots()
         {
-            if (_slots == null) return;
+            if (!Application.isPlaying || _slots == null || _itemBehaviours == null) return;
 
             for (int row = 0; row < _layout.Row; row++)
             {

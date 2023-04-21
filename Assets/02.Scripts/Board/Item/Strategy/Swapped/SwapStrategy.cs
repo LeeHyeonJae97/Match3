@@ -11,7 +11,7 @@ public class SwapStrategy : ItemSwappedStrategy
     {
         if (GetSwappedItem(out var swapped))
         {
-            item. StartCoroutine(CoSwap());
+            item.StartCoroutine(CoSwap());
         }
 
         // LOCAL FUNCTION
@@ -41,8 +41,14 @@ public class SwapStrategy : ItemSwappedStrategy
                 yield return cor;
             }
 
-            board.GetSlot(item.transform.position).Refreshed = true;
-            board.GetSlot(swapped.transform.position).Refreshed = true;
+            if (board.GetSlot(item, out var slot))
+            {
+                slot.Refreshed = true;
+            }
+            if (board.GetSlot(swapped, out slot))
+            {
+                slot.Refreshed = true;
+            }
 
             if (!boardBehaviour.Matchable())
             {

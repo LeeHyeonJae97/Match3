@@ -129,9 +129,9 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         bool Validate()
         {
-            if (_matchCalledTime == Time.time) return false;
+            if (_matchCalledTime == Time.frameCount) return false;
 
-            _matchCalledTime = Time.time;
+            _matchCalledTime = Time.frameCount;
 
             return true;
         }
@@ -145,9 +145,10 @@ public class BoardBehaviour : MonoBehaviour
 
             if (_matched.Count > 0)
             {
-                yield return StartCoroutine(CoRefill(_matched));
+                CoRefill(_matched);
                 Drop();
             }
+            yield return null;
             Reset();
         }
     }
@@ -384,7 +385,7 @@ public class BoardBehaviour : MonoBehaviour
         }
     }
 
-    private IEnumerator CoRefill(List<ItemBehaviour> matched)
+    private void CoRefill(List<ItemBehaviour> matched)
     {
         matched.Sort((l, r) =>
         {
@@ -407,6 +408,7 @@ public class BoardBehaviour : MonoBehaviour
         var pivot = default(ItemBehaviour);
         var matchGroup = 0;
 
+        var slots = new List<Slot>();
         var cors = new List<Coroutine>();
 
         var counts = new int[_boardLayout.Column];
@@ -425,6 +427,9 @@ public class BoardBehaviour : MonoBehaviour
                     matchGroup = slot.MatchGroup;
 
                     item.Initialize(_board.GetItem(GetSpecialItemType(slot)));
+
+                    // TODO :
+                    // 스페셜 아이템이 그 자리에 추가되었기 때문에 Slot의 Refreshed를 true로 해주어야한다.
                 }
                 else
                 {
@@ -433,25 +438,28 @@ public class BoardBehaviour : MonoBehaviour
                     var pivotPosition = pivot.transform.position;
                     var refillPosition = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column);
 
-                    var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
+                    //var cor = StartCoroutine(CoMove(item, pivotPosition, refillPosition));
 
-                    cors.Add(cor);
+                    //cors.Add(cor);
+
+                    item.transform.position = refillPosition;
+                    item.Initialize(_board.GetItem(ItemType.Candy));
                 }
             }
             else
             {
                 counts[column]++;
 
-                item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column); ;
+                item.transform.position = _boardLayout.GetPosition(_boardLayout.Row - 1 + counts[column], column);
 
                 item.Initialize(_board.GetItem(ItemType.Candy));
             }
         }
 
-        foreach (var cor in cors)
-        {
-            yield return cor;
-        }
+        //foreach (var cor in cors)
+        //{
+        //    yield return cor;
+        //}
 
         // LOCAL FUNCTIOn
         bool NeedSpecialItem(Slot slot)
@@ -491,7 +499,7 @@ public class BoardBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         IEnumerator CoMove(ItemBehaviour item, Vector3 pivot, Vector3 refill)
         {
-            yield return StartCoroutine(item.CoMove(pivot, 5));
+            yield return StartCoroutine(item.CoMove(pivot));
 
             item.transform.position = refill;
 
@@ -551,6 +559,8 @@ public class BoardBehaviour : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        _board.OnDrawGizmos();
+        
         HighlightSelectedItem();
 
         // LOCAL FUNCTION

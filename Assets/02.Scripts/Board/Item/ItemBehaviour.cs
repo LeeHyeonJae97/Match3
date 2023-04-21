@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ItemBehaviour : MonoBehaviour
 {
+    public Item Item => _item;
+
     private Item _item;
     private BoardBehaviour _boardBehaviour;
     private Board _board;
@@ -62,7 +64,10 @@ public class ItemBehaviour : MonoBehaviour
         // LOCAL FUNCTION
         void SetRefreshed()
         {
-            _board.GetSlot(transform.position).Refreshed = true;
+            if (_board.GetSlot(this, out var slot))
+            {
+                slot.Refreshed = true;
+            }
         }
 
         // LOCAL FUNCTION
@@ -74,7 +79,7 @@ public class ItemBehaviour : MonoBehaviour
 
     public IEnumerator CoMove(Vector2 position)
     {
-        yield return StartCoroutine(CoMove(position, 5f));
+        yield return StartCoroutine(CoMove(position, 2.5f));
     }
 
     public IEnumerator CoMove(Vector2 position, float speed)
