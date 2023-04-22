@@ -30,6 +30,20 @@ public class BoardLayout : ScriptableObject
         return new Vector3(minX + column * width, minY + row * height);
     }
 
+    public int GetRow(ItemBehaviour itemBehaviour)
+    {
+        GetRowColumn(itemBehaviour, out var row, out var column);
+
+        return row;
+    }
+
+    public int GetColumn(ItemBehaviour itemBehaviour)
+    {
+        GetRowColumn(itemBehaviour, out var row, out var column);
+
+        return column;
+    }
+
     public void GetRowColumn(ItemBehaviour itemBehaviour, out int row, out int column)
     {
         GetRowColumn(itemBehaviour.transform.position, out row, out column);
@@ -44,19 +58,5 @@ public class BoardLayout : ScriptableObject
 
         row = Mathf.RoundToInt((position.y - minY) / height);
         column = Mathf.RoundToInt((position.x - minX) / width);
-    }
-
-    public int GetRow(ItemBehaviour itemBehaviour)
-    {
-        GetRowColumn(itemBehaviour, out var row, out var column);
-
-        return row;
-    }
-
-    public int GetColumn(ItemBehaviour itemBehaviour)
-    {
-        GetRowColumn(itemBehaviour, out var row, out var column);
-
-        return column;
     }
 }

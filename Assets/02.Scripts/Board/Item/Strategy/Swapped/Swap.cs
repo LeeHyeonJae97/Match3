@@ -11,7 +11,7 @@ public class Swap : ItemSwappedStrategy
     {
         if (GetNeighborInDirection(direction, board, boardLayout, itemBehaviour, out var neighbor))
         {
-            itemBehaviour.StartCoroutine(CoSwap());
+            boardBehaviour.StartCoroutine(CoSwap());
         }
 
         // LOCAL FUNCTION
@@ -22,8 +22,8 @@ public class Swap : ItemSwappedStrategy
 
             Coroutine[] cors =
             {
-                itemBehaviour.StartCoroutine(itemBehaviour.CoMove(neighborPos)),
-                itemBehaviour.StartCoroutine(neighbor.CoMove(itemPos))
+                boardBehaviour.StartCoroutine(itemBehaviour.CoMove(neighborPos)),
+                boardBehaviour.StartCoroutine(neighbor.CoMove(itemPos))
             };
 
             foreach (var cor in cors)
@@ -33,8 +33,8 @@ public class Swap : ItemSwappedStrategy
 
             if (!boardBehaviour.Matchable())
             {
-                cors[0] = itemBehaviour.StartCoroutine(itemBehaviour.CoMove(itemPos));
-                cors[1] = itemBehaviour.StartCoroutine(neighbor.CoMove(neighborPos));
+                cors[0] = boardBehaviour.StartCoroutine(itemBehaviour.CoMove(itemPos));
+                cors[1] = boardBehaviour.StartCoroutine(neighbor.CoMove(neighborPos));
 
                 foreach (var cor in cors)
                 {

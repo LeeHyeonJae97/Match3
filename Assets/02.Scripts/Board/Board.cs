@@ -112,10 +112,4 @@ public class Board : ScriptableObject
             _data[i] = _itemBehaviours[i].Item.Id;
         }
     }
-
-    [System.Obsolete]
-    public void Shuffle()
-    {
-
-    }
 }

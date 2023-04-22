@@ -6,9 +6,10 @@ using UnityEngine;
 public class Slot
 {
     public int RowScore { get; set; }
-    public int ColumnScore { get; set; }    
+    public int ColumnScore { get; set; }
     public int MatchGroup { get; set; }
     public bool Refreshed { get; set; }
+    public bool Special => (RowScore >= 3 && ColumnScore >= 3) || RowScore > 3 || ColumnScore > 3;
 
     public Slot()
     {

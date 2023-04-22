@@ -87,14 +87,7 @@ public class ItemBehaviour : MonoBehaviour
     {
         transform.DOKill(false);
 
-        yield return transform.DOMove(position, .25f).SetEase(Ease.Linear).WaitForCompletion();
-    }
-
-    public IEnumerator CoMove(Vector2 position, float speed)
-    {
-        transform.DOKill(false);
-
-        yield return transform.DOMove(position, 1 / speed).SetEase(Ease.Linear).WaitForCompletion();
+        yield return transform.DOMove(position, 1f).SetEase(Ease.Linear).WaitForCompletion();
     }
 
     public bool IsSame(ItemBehaviour itemBehaviour)
