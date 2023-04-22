@@ -17,4 +17,3 @@ MonoBehaviour:
   _sprite: {fileID: -1616531346, guid: fd03671d669a3b54294b547840058c12, type: 3}
   _swappedStrategy: {fileID: 11400000, guid: 24b3e4b854f0fe146947e2125e7926f0, type: 2}
   _removedStrategy: {fileID: 11400000, guid: 877c426f28883e241841d64eb10f2802, type: 2}
-  _subRemovedStrategy: {fileID: 11400000, guid: 36ce1ecb95411eb49ab0724af34ad8b5, type: 2}

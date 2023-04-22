@@ -39,7 +39,10 @@ public class RemoveRow : ItemRemovedStrategy
             {
                 var removed = board.GetItemBehaviour(row, c);
 
-                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+                if (removed != null)
+                {
+                    removed.OnRemoved(matched, itemBehaviour);
+                }
             }
         }
 
@@ -50,7 +53,10 @@ public class RemoveRow : ItemRemovedStrategy
             {
                 var removed = board.GetItemBehaviour(r, column);
 
-                if (removed != null && !matched.Contains(removed)) removed.OnRemoved(matched, itemBehaviour);
+                if (removed != null)
+                {
+                    removed.OnRemoved(matched, itemBehaviour);
+                }
             }
         }
     }

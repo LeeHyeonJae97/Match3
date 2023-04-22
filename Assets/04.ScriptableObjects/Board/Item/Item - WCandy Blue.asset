@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24794bd48d2fca74a9cca709f00d10dc, type: 3}
-  m_Name: Item - HSCandy Yellow
+  m_Name: Item - WCandy Blue
   m_EditorClassIdentifier: 
-  _type: 1
-  _color: 3
-  _sprite: {fileID: -2010835590, guid: fd03671d669a3b54294b547840058c12, type: 3}
+  _type: 3
+  _color: 0
+  _sprite: {fileID: -1482756514, guid: fd03671d669a3b54294b547840058c12, type: 3}
   _swappedStrategy: {fileID: 11400000, guid: 24b3e4b854f0fe146947e2125e7926f0, type: 2}
-  _removedStrategy: {fileID: 11400000, guid: 877c426f28883e241841d64eb10f2802, type: 2}
+  _removedStrategy: {fileID: 11400000, guid: e50193a72af8f4d418bf87666dfc428a, type: 2}

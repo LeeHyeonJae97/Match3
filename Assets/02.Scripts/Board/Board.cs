@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
 public class Board : ScriptableObject
 {
-    [SerializeField] private BoardLayout _layout;
+    [SerializeField] private BoardLayout _boardLayout;
     [SerializeField] private List<Item> _items;
     [SerializeField] private int[] _data;
     private List<ItemBehaviour> _itemBehaviours;
@@ -15,15 +15,15 @@ public class Board : ScriptableObject
     public void Initialize(List<ItemBehaviour> itemBehaviours)
     {
         Assert.IsNotNull(itemBehaviours);
-        Assert.AreEqual(_layout.Row * _layout.Column, itemBehaviours.Count);
+        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, itemBehaviours.Count);
 
         _itemBehaviours = itemBehaviours;
 
-        _slots = new Slot[_layout.Row, _layout.Column];
+        _slots = new Slot[_boardLayout.Row, _boardLayout.Column];
 
-        for (int row = 0; row < _layout.Row; row++)
+        for (int row = 0; row < _boardLayout.Row; row++)
         {
-            for (int column = 0; column < _layout.Column; column++)
+            for (int column = 0; column < _boardLayout.Column; column++)
             {
                 _slots[row, column] = new Slot();
             }
@@ -37,7 +37,7 @@ public class Board : ScriptableObject
 
     public ItemBehaviour GetItemBehaviour(int row, int column)
     {
-        return GetItemBehaviour(_layout.GetPosition(row, column));
+        return GetItemBehaviour(_boardLayout.GetPosition(row, column));
     }
 
     public Item GetItem(int id)
@@ -52,30 +52,35 @@ public class Board : ScriptableObject
         return item[Random.Range(0, item.Count)];
     }
 
+    public Item GetItem(ItemType type, ItemColor color)
+    {
+        return _items.Find((item) => item.Type == type && item.Color == color);
+    }
+
     public Slot GetSlot(ItemBehaviour itemBehaviour)
     {
-        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
+        _boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
 
-        return _layout.IsValid(row, column) ? _slots[row, column] : null;
+        return GetSlot(row, column);
+    }
+
+    public Slot GetSlot(int row, int column)
+    {
+        return _boardLayout.IsValid(row, column) ? _slots[row, column] : null;
     }
 
     public bool TryGetSlot(ItemBehaviour itemBehaviour, out Slot slot)
     {
-        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
+        _boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
 
-        bool valid = _layout.IsValid(row, column);
+        bool valid = _boardLayout.IsValid(row, column);
 
         slot = valid ? _slots[row, column] : null;
 
         return valid;
     }
 
-    public Slot GetSlot(int row, int column)
-    {
-        return _layout.IsValid(row, column) ? _slots[row, column] : null;
-    }
-
-    public void ResetSlots()
+    public void Reset()
     {
         foreach (var slot in _slots)
         {
@@ -83,10 +88,11 @@ public class Board : ScriptableObject
         }
     }
 
+    [System.Obsolete]
     public void Load()
     {
-        Assert.AreEqual(_layout.Row * _layout.Column, _data.Length);
-        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
+        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _data.Length);
+        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _itemBehaviours.Count);
 
         for (int i = 0; i < _data.Length; i++)
         {
@@ -94,9 +100,10 @@ public class Board : ScriptableObject
         }
     }
 
+    [System.Obsolete]
     public void Save()
     {
-        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
+        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _itemBehaviours.Count);
 
         _data = new int[_itemBehaviours.Count];
 
@@ -106,56 +113,9 @@ public class Board : ScriptableObject
         }
     }
 
+    [System.Obsolete]
     public void Shuffle()
     {
 
-    }
-
-    public void OnDrawGizmos()
-    {
-        DrawItems();
-        DrawSlots();
-
-        // LOCAL FUNCTION
-        void DrawItems()
-        {
-            if (!Application.isPlaying || _itemBehaviours == null) return;
-
-            foreach (var item in _itemBehaviours)
-            {
-                if (item != null)
-                {
-                    _layout.GetRowColumn(item, out var row, out var column);
-
-                    var position = item.transform.position - new Vector3(item.transform.localScale.x / 2, 0, 0);
-
-                    UnityEditor.Handles.Label(position, $"({column},{row})");
-                }
-            }
-        }
-
-        // LOCAL FUNCTION
-        void DrawSlots()
-        {
-            if (!Application.isPlaying || _slots == null || _itemBehaviours == null) return;
-
-            for (int row = 0; row < _layout.Row; row++)
-            {
-                for (int column = 0; column < _layout.Column; column++)
-                {
-                    var slot = _slots[row, column];
-                    var rs = slot.RowScore;
-                    var cs = slot.ColumnScore;
-                    var mg = slot.MatchGroup;
-                    var refreshed = slot.Refreshed;
-
-                    var position = _layout.GetPosition(row, column);
-
-                    position.x -= _itemBehaviours[0].transform.localScale.x / 4;
-
-                    UnityEditor.Handles.Label(position , $"({rs},{cs}) / {mg} / {refreshed}");
-                }
-            }
-        }
     }
 }

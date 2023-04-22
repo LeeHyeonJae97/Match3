@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -10,6 +11,8 @@ public class BoardBehaviour : MonoBehaviour
     [SerializeField] private Board _board;
     [SerializeField] private BoardLayout _boardLayout;
     [SerializeField] private InputManager _inputManager;
+    [SerializeField] private bool _drawItem;
+    [SerializeField] private bool _drawSlot;
     private ItemBehaviour _selected;
     private List<ItemBehaviour> _matched;
     private float _matchCalledTime;
@@ -21,16 +24,12 @@ public class BoardBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
-        _inputManager.OnTouched += OnTouched;
-        _inputManager.OnScrolled += OnScrolled;
-        _inputManager.OnReleased += OnReleased;
+        AddInputEventListener();
     }
 
     private void OnDisable()
     {
-        _inputManager.OnTouched -= OnTouched;
-        _inputManager.OnScrolled -= OnScrolled;
-        _inputManager.OnReleased -= OnReleased;
+        RemoveInputEventListeners();
     }
 
     private void Update()
@@ -148,6 +147,36 @@ public class BoardBehaviour : MonoBehaviour
                 CoRefill(_matched);
                 Drop();
             }
+            Reset();
+        }
+    }
+
+    public void Match(ItemBehaviour itemBehaviour, ItemBehaviour target)
+    {
+        if (!Validate()) return;
+
+        StartCoroutine(CoMatch());
+
+        // LOCAL FUNCTION
+        bool Validate()
+        {
+            if (_matchCalledTime == Time.frameCount) return false;
+
+            _matchCalledTime = Time.frameCount;
+
+            return true;
+        }
+
+        // LOCAL FUNCTION
+        IEnumerator CoMatch()
+        {
+            yield return new WaitForEndOfFrame();
+
+            itemBehaviour.OnRemoved(_matched, target);
+            target.OnRemoved(_matched, null);
+
+            CoRefill(_matched);
+            Drop();
             Reset();
         }
     }
@@ -441,7 +470,7 @@ public class BoardBehaviour : MonoBehaviour
                     pivot = item;
                     matchGroup = slot.MatchGroup;
 
-                    item.Initialize(_board.GetItem(GetSpecialItemType(slot)));
+                    item.Initialize(GetSpecialItemType(item, slot));
 
                     // TODO :
                     // 스페셜 아이템이 그 자리에 추가되었기 때문에 Slot의 Refreshed를 true로 해주어야한다.
@@ -483,31 +512,31 @@ public class BoardBehaviour : MonoBehaviour
         }
 
         // LOCAL FUNCTION
-        ItemType GetSpecialItemType(Slot slot)
+        Item GetSpecialItemType(ItemBehaviour itemBehaviour, Slot slot)
         {
             if (slot.RowScore >= 3 && slot.ColumnScore >= 3)
             {
-                return ItemType.Candy;
+                return _board.GetItem(ItemType.WCandy, itemBehaviour.Item.Color);
             }
             else if (slot.RowScore == 4)
             {
-                return ItemType.VSCandy;
+                return _board.GetItem(ItemType.VSCandy, itemBehaviour.Item.Color);
             }
             else if (slot.RowScore == 5)
             {
-                return ItemType.VSCandy;
+                return _board.GetItem(ItemType.Rainbow, ItemColor.None);
             }
             else if (slot.ColumnScore == 4)
             {
-                return ItemType.HSCandy;
+                return _board.GetItem(ItemType.HSCandy, itemBehaviour.Item.Color);
             }
             else if (slot.ColumnScore == 5)
             {
-                return ItemType.HSCandy;
+                return _board.GetItem(ItemType.Rainbow, ItemColor.None);
             }
             else
             {
-                return ItemType.Candy;
+                return null;
             }
         }
 
@@ -547,7 +576,74 @@ public class BoardBehaviour : MonoBehaviour
     private void Reset()
     {
         _matched.Clear();
-        _board.ResetSlots();
+        _board.Reset();
+    }
+
+    private void OnDrawGizmos()
+    {
+        DrawItems();
+        DrawSlots();
+        HighlightSelectedItem();
+
+        // LOCAL FUNCTION
+        void HighlightSelectedItem()
+        {
+            if (_selected == null) return;
+
+            Gizmos.DrawWireRect(_selected.transform.position, _selected.transform.localScale * 1.2f, Color.red);
+        }
+
+        // LOCAL FUNCTION
+        void DrawItems()
+        {
+            if (!Application.isPlaying || !_drawItem) return;
+
+            for (int row = 0; row < _boardLayout.Row; row++)
+            {
+                for (int column = 0; column < _boardLayout.Column; column++)
+                {
+                    Handles.color = Color.black;
+                    Handles.Label(_boardLayout.GetPosition(row, column), $"({column},{row})");
+                }
+            }
+        }
+
+        // LOCAL FUNCTION
+        void DrawSlots()
+        {
+            if (!Application.isPlaying || !_drawSlot) return;
+
+            for (int row = 0; row < _boardLayout.Row; row++)
+            {
+                for (int column = 0; column < _boardLayout.Column; column++)
+                {
+                    var slot = _board.GetSlot(row, column);
+                    var rs = slot.RowScore;
+                    var cs = slot.ColumnScore;
+                    var mg = slot.MatchGroup;
+                    var refreshed = slot.Refreshed;
+
+                    var position = _boardLayout.GetPosition(row, column);
+
+                    Handles.color = Color.black;
+                    Handles.Label(position, $"({rs},{cs}) / {mg} / {refreshed}");
+                }
+            }
+        }
+    }
+
+    private void AddInputEventListener()
+    {
+        _inputManager.OnTouched += OnTouched;
+        _inputManager.OnScrolled += OnScrolled;
+        _inputManager.OnReleased += OnReleased;
+    }
+
+    private void RemoveInputEventListeners()
+    {
+        _inputManager.OnTouched -= OnTouched;
+        _inputManager.OnScrolled -= OnScrolled;
+        _inputManager.OnReleased -= OnReleased;
     }
 
     private void OnTouched(Vector2 position)
@@ -570,20 +666,5 @@ public class BoardBehaviour : MonoBehaviour
     private void OnReleased()
     {
         _selected = null;
-    }
-
-    private void OnDrawGizmos()
-    {
-        _board.OnDrawGizmos();
-        
-        HighlightSelectedItem();
-
-        // LOCAL FUNCTION
-        void HighlightSelectedItem()
-        {
-            if (_selected == null) return;
-
-            Gizmos.DrawWireRect(_selected.transform.position, _selected.transform.localScale * 1.2f, Color.red);
-        }
     }
 }

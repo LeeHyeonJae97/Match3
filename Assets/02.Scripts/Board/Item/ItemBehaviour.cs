@@ -36,7 +36,7 @@ public class ItemBehaviour : MonoBehaviour
 
     public void OnSwapped(Vector2Int direction)
     {
-        _item.SwappedStrategy.OnSwapped(direction, this, _boardBehaviour, _board, _boardLayout);
+        _item.SwappedStrategy.OnSwapped(direction, _boardBehaviour, _board, _boardLayout, this);
     }
 
     public void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover)
