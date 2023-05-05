@@ -7,9 +7,9 @@ public class Swap : ItemSwappedStrategy
 {
     protected const string NAME = nameof(Swap);
 
-    public override void OnSwapped(Vector2Int direction, BoardBehaviour boardBehaviour, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnSwapped(Vector2Int direction, BoardBehaviour boardBehaviour, Board board, ItemBehaviour itemBehaviour)
     {
-        if (GetNeighborInDirection(direction, board, boardLayout, itemBehaviour, out var neighbor))
+        if (GetNeighborInDirection(direction, board, itemBehaviour, out var neighbor))
         {
             boardBehaviour.StartCoroutine(CoSwap());
         }

@@ -7,7 +7,7 @@ public class RemoveColumn : ItemRemovedStrategy
 {
     protected const string NAME = nameof(RemoveColumn);
 
-    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, ItemBehaviour itemBehaviour)
     {
         if (matched.Contains(itemBehaviour)) return;
 
@@ -15,12 +15,12 @@ public class RemoveColumn : ItemRemovedStrategy
 
         if (remover == null)
         {
-            RemoveColumn(boardLayout.GetColumn(itemBehaviour));
+            RemoveColumn(board.Layout.GetColumn(itemBehaviour));
         }
         else
         {
-            boardLayout.GetRowColumn(remover, out var removerRow, out var removerColumn);
-            boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+            board.Layout.GetRowColumn(remover, out var removerRow, out var removerColumn);
+            board.Layout.GetRowColumn(itemBehaviour, out var row, out var column);
 
             if (removerColumn == column)
             {
@@ -35,7 +35,7 @@ public class RemoveColumn : ItemRemovedStrategy
         // LOCAL FUNCTION
         void RemoveRow(int row)
         {
-            for (int c = 0; c < boardLayout.Column; c++)
+            for (int c = 0; c < board.Layout.Column; c++)
             {
                 var removed = board.GetItemBehaviour(row, c);
 
@@ -49,7 +49,7 @@ public class RemoveColumn : ItemRemovedStrategy
         // LOCAL FUNCTION
         void RemoveColumn(int column)
         {
-            for (int r = 0; r < boardLayout.Row; r++)
+            for (int r = 0; r < board.Layout.Row; r++)
             {
                 var removed = board.GetItemBehaviour(r, column);
 

@@ -7,13 +7,13 @@ public class RemoveNeighbors : ItemRemovedStrategy
 {
     protected const string NAME = nameof(RemoveNeighbors);
 
-    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour)
+    public override void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, ItemBehaviour itemBehaviour)
     {
         if (matched.Contains(itemBehaviour)) return;
 
         matched.Add(itemBehaviour);
 
-        boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+        board.Layout.GetRowColumn(itemBehaviour, out var row, out var column);
 
         for (int r = row - 1; r <= row + 1; r++)
         {

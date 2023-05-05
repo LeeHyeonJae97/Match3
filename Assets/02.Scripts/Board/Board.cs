@@ -6,7 +6,9 @@ using UnityEngine.Assertions;
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObject/Board/Board")]
 public class Board : ScriptableObject
 {
-    [SerializeField] private BoardLayout _boardLayout;
+    public BoardLayout Layout => _layout;
+
+    [SerializeField] private BoardLayout _layout;
     [SerializeField] private List<Item> _items;
     [SerializeField] private int[] _data;
     private List<ItemBehaviour> _itemBehaviours;
@@ -15,19 +17,29 @@ public class Board : ScriptableObject
     public void Initialize(List<ItemBehaviour> itemBehaviours)
     {
         Assert.IsNotNull(itemBehaviours);
-        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, itemBehaviours.Count);
+        Assert.AreEqual(_layout.Row * _layout.Column, itemBehaviours.Count);
 
         _itemBehaviours = itemBehaviours;
 
-        _slots = new Slot[_boardLayout.Row, _boardLayout.Column];
+        _slots = new Slot[_layout.Row, _layout.Column];
 
-        for (int row = 0; row < _boardLayout.Row; row++)
+        for (int row = 0; row < _layout.Row; row++)
         {
-            for (int column = 0; column < _boardLayout.Column; column++)
+            for (int column = 0; column < _layout.Column; column++)
             {
                 _slots[row, column] = new Slot();
             }
         }
+    }
+
+    public ItemBehaviour GetItemBehaviourApproximately(Vector3 position)
+    {
+        return _itemBehaviours.Find((item) => item.transform.position.SqrDst(position) < 0.01f);
+    }
+
+    public ItemBehaviour GetItemBehaviourApproximately(int row, int column)
+    {
+        return GetItemBehaviourApproximately(_layout.GetPosition(row, column));
     }
 
     public ItemBehaviour GetItemBehaviour(Vector3 position)
@@ -37,7 +49,7 @@ public class Board : ScriptableObject
 
     public ItemBehaviour GetItemBehaviour(int row, int column)
     {
-        return GetItemBehaviour(_boardLayout.GetPosition(row, column));
+        return GetItemBehaviour(_layout.GetPosition(row, column));
     }
 
     public Item GetItem(int id)
@@ -59,21 +71,21 @@ public class Board : ScriptableObject
 
     public Slot GetSlot(ItemBehaviour itemBehaviour)
     {
-        _boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
 
         return GetSlot(row, column);
     }
 
     public Slot GetSlot(int row, int column)
     {
-        return _boardLayout.IsValid(row, column) ? _slots[row, column] : null;
+        return _layout.IsValid(row, column) ? _slots[row, column] : null;
     }
 
     public bool TryGetSlot(ItemBehaviour itemBehaviour, out Slot slot)
     {
-        _boardLayout.GetRowColumn(itemBehaviour, out var row, out var column);
+        _layout.GetRowColumn(itemBehaviour, out var row, out var column);
 
-        bool valid = _boardLayout.IsValid(row, column);
+        bool valid = _layout.IsValid(row, column);
 
         slot = valid ? _slots[row, column] : null;
 
@@ -91,8 +103,8 @@ public class Board : ScriptableObject
     [System.Obsolete]
     public void Load()
     {
-        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _data.Length);
-        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _itemBehaviours.Count);
+        Assert.AreEqual(_layout.Row * _layout.Column, _data.Length);
+        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
 
         for (int i = 0; i < _data.Length; i++)
         {
@@ -103,7 +115,7 @@ public class Board : ScriptableObject
     [System.Obsolete]
     public void Save()
     {
-        Assert.AreEqual(_boardLayout.Row * _boardLayout.Column, _itemBehaviours.Count);
+        Assert.AreEqual(_layout.Row * _layout.Column, _itemBehaviours.Count);
 
         _data = new int[_itemBehaviours.Count];
 

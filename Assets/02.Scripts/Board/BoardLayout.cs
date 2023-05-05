@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BoardLayout", menuName = "ScriptableObject/Board/Layout")]
-public class BoardLayout : ScriptableObject
+[System.Serializable]
+public struct BoardLayout
 {
     public int Row => _row;
     public int Column => _column;

@@ -6,5 +6,5 @@ public abstract class ItemRemovedStrategy : ScriptableObject
 {
     protected const string PATH = "ScriptableObject/Board/Item/Strategy/";
 
-    public abstract void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, BoardLayout boardLayout, ItemBehaviour itemBehaviour);
+    public abstract void OnRemoved(List<ItemBehaviour> matched, ItemBehaviour remover, Board board, ItemBehaviour itemBehaviour);
 }
